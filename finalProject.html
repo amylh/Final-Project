@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script type="text/javascript" src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+		Crafty.init(800,600, document.getElementById('game'));
+		Crafty.background('url(http://i483.photobucket.com/albums/rr198/F12anky/starrynightsky1.jpg)')
+		//Crafty.e('2D, DOM, Color').attr({x: 0, y: 0, w: 100, h: 100}).color('#F00');
+		Crafty.e('Floor, 2D, Canvas, Color')
+			.attr({x: 0, y: 550, w: 800, h: 50})
+			.color('black');
+	  
+		Crafty.e('2D, Canvas, Color, Fourway, Gravity')
+			.attr({x: 0, y: 0, w: 50, h: 50})
+			.color('#F00')
+			.fourway(4)
+			.gravity('Floor');
+
+    </script>
+  </body>
+</html>
