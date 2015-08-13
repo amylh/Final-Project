@@ -7,6 +7,7 @@
     
 	<script>
 		Crafty.init(800,600, document.getElementById('game'));
+		
 		//template for solids
 		Crafty.c('Solid', {
 			init: function() {
@@ -15,6 +16,30 @@
 			},
 		});
 		
+		//template for Player-controlled sprite
+		Crafty.c('playerC', {
+			init: function() {
+				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
+					.twoway(4,7)
+					.color('black')
+					.gravity('Solid')
+					.stopOnSolids();
+			},
+			stopOnSolids: function() {
+				this.onHit('Solid', this.stopMovement);
+				return this;
+			},
+			// Stops the movement
+			stopMovement: function() {
+				this._speed = 0;
+				if (this._movement) {
+					this.x -= this._movement.x;
+					this.y -= this._movement.y;
+				}
+			}
+		});
+		
+		//start screen
 		Crafty.defineScene('Start', function(){
 			Crafty.background('url(http://i483.photobucket.com/albums/rr198/F12anky/starrynightsky1.jpg)');
 			Crafty.e('2D, DOM, Canvas, Text')
@@ -24,21 +49,18 @@
 				.textFont({type:'italic', size:'100px', family:'Cursive', weight:'bold'});
 		});
 		
+		//level 1 screen
 		Crafty.defineScene('level1', function(){
 			Crafty.background('url(http://i483.photobucket.com/albums/rr198/F12anky/starrynightsky1.jpg)');
 			//platforms
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 800, h: 50});
-			Crafty.e('Solid').attr({x: 0, y: 450, w: 400, h:10});
-			//player-controlled sprite
-		var player = Crafty.e('2D, Canvas, Color, Twoway, Gravity, Collision')
-			.attr({x: 200, y: 200, w: 30, h: 50})
-			.color('black')
-			.twoway(4, 7)
-			.gravity('Solid');
-		Crafty.viewport.follow(player,0,0);
+			Crafty.e('Solid').attr({x: 0, y: 450, w: 400, h: 120});
 		});
 		
-		Crafty.enterScene('Start');
+		//triggered when 'start' button is pressed
+		Crafty.enterScene('level1');
+		var player = Crafty.e('playerC').attr({x: 200, y: 200, w: 30, h: 50});		//initiates player
+		Crafty.viewport.follow(player,0,0);			//camera to follow player
 		
 
     </script>
