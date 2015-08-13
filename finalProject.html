@@ -68,7 +68,34 @@
 		
 		//triggered when 'start' button is pressed
 		Crafty.enterScene('level1');
-		var player = Crafty.e('playerC').attr({x: 200, y: 200, w: 30, h: 50});		//initiates player
+		var player = Crafty.e('playerC').attr({x: 200, y: 200, w: 30, h: 50})
+		.bind("KeyDown", function(e) {
+			if(e.keyCode === Crafty.keys.SPACE) {
+					//create a bullet entity
+					Crafty.e("2D, DOM, Color, bullet")
+						.attr({
+							x: this._x, 
+							y: this._y, 
+							w: 10, 
+							h: 10, 
+							//rotation: this._rotation, 
+							xspeed: 10, 
+							yspeed: 0
+						})
+						.color("rgb(0, 255, 0)")
+						.bind("EnterFrame", function() {	
+							//for(var i=0; i<2; i++){
+								this.x += this.xspeed;
+								this.y -= this.yspeed;
+							//}
+							//destroy if it goes out of bounds
+							if(this._x > Crafty.viewport.width || this._x < 0 || this._y > Crafty.viewport.height || this._y < 0) {
+								this.destroy();
+							}
+						})
+			}
+			
+		});		//initiates player
 		Crafty.viewport.follow(player,0,0);			//camera to follow player
 		
 		/** ABILITIES **/
