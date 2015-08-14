@@ -63,7 +63,16 @@
 			}
 		});
 		
-		Crafty.c()
+		//A door? (to get to the next level?)
+		Crafty.c('Door',{
+			init: function(){
+				this.requires('2D, Canvas, Grid, Color, Collision');
+				this.color('white');
+			
+			}
+		
+		
+		});
 		
 		/** LEVEL SCREENS **/
 		//start screen
@@ -86,6 +95,8 @@
 			//border
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
+			Crafty.e('Door').attr({x:770, y: 130, w: 50, h: 100});
+			Crafty.e("2D, DOM, Text").attr({ x: 100, y: 100, w: 400}).text("SOME INSPIRATIONAL STORY TEXT HERE").textColor('#CCFFFF').textFont({size: '20px'});
 		});
 		
 		/** INITIATIONS **/
@@ -138,6 +149,17 @@
 			//water blast or tsunami
 			//breathe underwater
 		});
+		
+		
+		//able to change scenes
+		player.bind('KeyDown', function(e){
+			if(e.key === Crafty.keys.DOWN_ARROW && player.hit('Door')){
+				Crafty.enterScene('Start');
+			
+			}
+		
+		
+		})
 
     </script>
   </body>
