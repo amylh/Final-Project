@@ -9,7 +9,29 @@
     
 	<script>
 		Crafty.init(800,600, document.getElementById('game'));	//initiate crafty & window
-		
+		function SpawnEnemy(x, y) {
+		Crafty.e("enemy, 2D, Canvas, Color, Twoway, Gravity, Collision")
+		.color('#ff0000')
+		.attr({ x: x, y: y, w: 15, h: 40, dX: 2 })
+		.gravity('Solid')
+		.bind('EnterFrame', function () {
+			this.x += this.dX;
+		})
+		.onHit("Solid", function() {
+			this.dX *= -1;
+		})
+		.bind('EnterFrame', function () {
+			/*if (this.x >= stageW - this.w) {
+				this.x = stageW - this.w;
+				this.dX *= -1;
+			}*/
+			
+			if (this.x <= 0) {
+				this.x = 0;
+				this.dX *= -1;
+			}
+		})
+		};
 		//template for solids
 		Crafty.c('Solid', {
 			init: function() {
@@ -80,6 +102,7 @@
 		
 		//triggered when 'start' button is pressed
 		Crafty.enterScene('level0');
+		SpawnEnemy(770, 230)
 		
 		//initiates player
 		var player = Crafty.e('playerC').attr({x: 200, y: 520, w: 30, h: 50});
