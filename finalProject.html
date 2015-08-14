@@ -29,6 +29,7 @@
 						if (this.hit('Solid')){
 							this.attr({x: p.x});
 						}
+						//var dir = 
 					});
 			}
 		});
@@ -40,6 +41,9 @@
 					.color('green')
 					.bind('EnterFrame', function(){
 						this.x += this.xspeed;
+						if(this._x > Crafty.viewport.width || this._x < 0 || this._y > Crafty.viewport.height || this._y < 0 || this.hit('Solid')) {
+							this.destroy();
+						}
 					})
 			}
 		});
@@ -89,9 +93,6 @@
 		player.bind('KeyDown', function(e){
 			if(e.key === Crafty.keys.SPACE){
 				Crafty.e('projectile').attr({x: this._x, y: this._y, w: 10, h: 10, xspeed: 10});
-				if(this._x > Crafty.viewport.width || this._x < 0 || this._y > Crafty.viewport.height || this._y < 0) {
- 					this.destroy();
-				}
 			}
 		});
 
