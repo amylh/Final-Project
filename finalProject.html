@@ -9,35 +9,25 @@
     
 	<script>
 		Crafty.init(800,600, document.getElementById('game'));	//initiate crafty & window
-		function SpawnEnemy(x, y) {
-		Crafty.e("enemy, 2D, Canvas, Color, Twoway, Gravity, Collision")
-		.color('#ff0000')
-		.attr({ x: x, y: y, w: 15, h: 40, dX: 2 })
-		.gravity('Solid')
-		.bind('EnterFrame', function () {
-			this.x += this.dX;
-		})
-		.onHit("Solid", function() {
-			this.dX *= -1;
-		})
-		.bind('EnterFrame', function () {
-			/*if (this.x >= stageW - this.w) {
-				this.x = stageW - this.w;
-				this.dX *= -1;
-			}*/
-			
-			if (this.x <= 0) {
-				this.x = 0;
-				this.dX *= -1;
-			}
-		})
-		};
+		
 		//template for solids
 		Crafty.c('Solid', {
 			init: function() {
 				this.requires('2D, Canvas, Grid, Color');
 				this.color('black');
 			},
+		});
+		
+		
+		//A door? (to get to the next level?)
+		Crafty.c('Door',{
+			init: function(){
+				this.requires('2D, Canvas, Grid, Color');
+				this.color('white');
+			
+			}
+		
+		
 		});
 		
 		//template for Player-controlled sprite
@@ -74,6 +64,12 @@
 							this.destroy();	//destroy the bullet if it leaves the visible screen portion
 						}
 					})
+					.onHit("enemy", function(entities) {
+					for (var i = 0; i <2; i++){
+						enemy.destroy();
+					}
+					})
+					
 			}
 		});
 		
@@ -98,12 +94,14 @@
 			//border
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
+			Crafty.e('Door').attr({x:770, y: 130, w: 50, h: 100});
 		});
 		
 		//triggered when 'start' button is pressed
 		Crafty.enterScene('level0');
-		SpawnEnemy(770, 230)
 		
+		
+
 		//initiates player
 		var player = Crafty.e('playerC').attr({x: 200, y: 520, w: 30, h: 50});
 		Crafty.viewport.follow(player,0,0);			//camera to follow player
