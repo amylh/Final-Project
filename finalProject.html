@@ -29,7 +29,7 @@
 						if (this.hit('Solid')){
 							this.attr({x: p.x});
 						}
-						//var dir = 
+						//dir = this.
 					});
 			}
 		});
@@ -41,7 +41,7 @@
 					.color('green')
 					.bind('EnterFrame', function(){
 						this.x += this.xspeed;
-						if(this._x > Crafty.viewport.width || this._x < 0 || this._y > Crafty.viewport.height || this._y < 0 || this.hit('Solid')) {
+						if(this._x < this._x-Crafty.viewport.width || this._x > this._x+Crafty.viewport.width || this._y < this.y-Crafty.viewport.height || this._y > this.y+Crafty.viewport.height || this.hit('Solid')) {
 							this.destroy();
 						}
 					})
