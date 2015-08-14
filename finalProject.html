@@ -101,18 +101,13 @@
 		/** ABILITIES **/
 		player.bind('KeyDown', function(e) {
 			//sword
-			if(player.slotSelect === 1){
-				if(e.key === Crafty.keys.SPACE){
-					//
-				}
-			}
 			//super strength
 			//gemini????
 			//body shield
 			//roar
 			//invisibility
 			//healing
-			else if(player.slotSelect === 7){
+			if(player.slotSelect === 7){
 				if(e.key === Crafty.keys.SPACE){
 					player.health += 30;
 					if(player.health > player.maxHealth){player.health = player.maxHealth;}
