@@ -24,20 +24,24 @@
 				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
 					.twoway(4,7)
 					.color('black')
-					.gravity('Solid');
-					//.stop();
-			}/**, 
-
-			stop: function() {
-				this.onHit('Solid', this.stopMoving);
-				return this;
-			},
-			stopMoving: function() {
-				this._speed = 0;
-				if (this._movement) {
-					this.x -= this._movement.x +1;
-				}
-			}**/
+					.gravity('Solid')
+					.bind('Moved', function(p) {
+						if (this.hit('Solid')){
+							this.attr({x: p.x});
+						}
+					});
+			}
+		});
+		
+		//template for projectiles (both player & enemy)
+		Crafty.c('projectile', {
+			init: function(){
+				this.requires('2D, DOM, Color, Collision')
+					.color('green')
+					.bind('EnterFrame', function(){
+						this.x += this.xspeed;
+					})
+			}
 		});
 		
 		/** LEVEL SCREENS **/
@@ -64,13 +68,9 @@
 		
 		//triggered when 'start' button is pressed
 		Crafty.enterScene('level1');
-		var player = Crafty.e('playerC').attr({x: 200, y: 520, w: 30, h: 50})
-			.bind('Moved', function(from) {
-				if (this.hit('Solid')){
-					this.attr({x: from.x});
-				}
-			});
+		
 		//initiates player
+		var player = Crafty.e('playerC').attr({x: 200, y: 520, w: 30, h: 50});
 		Crafty.viewport.follow(player,0,0);			//camera to follow player
 		
 		/** ABILITIES **/
@@ -82,6 +82,16 @@
 				this._up = true;
 				this._gy = 0;
 				this._canJumpAgain = false;
+			}
+		});
+		
+		//poison bullets
+		player.bind('KeyDown', function(e){
+			if(e.key === Crafty.keys.SPACE){
+				Crafty.e('projectile').attr({x: this._x, y: this._y, w: 10, h: 10, xspeed: 10});
+				if(this._x > Crafty.viewport.width || this._x < 0 || this._y > Crafty.viewport.height || this._y < 0) {
+ 					this.destroy();
+				}
 			}
 		});
 
