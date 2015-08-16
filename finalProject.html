@@ -24,7 +24,7 @@
 		.onHit("Solid", function() {
 			this.dX *= -1;
 		})
-		.onHit("projectile", function(){
+		.onHit("Projectile", function(){
 			this.destroy();
 			ew = false;
 		})
@@ -169,7 +169,12 @@
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:800, y: 130, w: 50, h: 100});
+			Crafty.e('Door').attr({x:800, y: 130, w: 50, h: 100})
+			.bind('KeyDown', function(e){
+				if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && ew == false){
+				Crafty.enterScene('level3');
+			}
+			});
 			
 			//spawns player & misc.
 			var playerw = 30;
@@ -192,6 +197,7 @@
 				.attr({x: -Crafty.viewport._x+305, y: -Crafty.viewport._y+30, w: 480, h:40})
 				.image('http://i.imgur.com/oVWgV3l.png');
 			
+			
 			//update health & ability slot bars
 			player.bind('Moved', function(){
 				healthBarOutline.destroy();
@@ -211,6 +217,7 @@
 					.attr({x: -Crafty.viewport._x+305, y: -Crafty.viewport._y+30, w: 480, h:40})
 					.image('http://i.imgur.com/oVWgV3l.png');
 			});
+			
 			
 		/** ABILITIES **/
 			player.bind('KeyDown', function(e) {
@@ -253,13 +260,10 @@
 				//breathe underwater
 			});
 		}
+		
+		spawn(200, 550);
 		//enemy!!
 			SpawnEnemy(770, 140);
-			player.bind('KeyDown', function(e, en){
-				if(e.key === Crafty.keys.DOWN_ARROW && player.hit('Door') && ew == false){
-				Crafty.enterScene('level3');
-			}
-			});
 		});
 		
 		/** INITIATIONS **/
