@@ -106,11 +106,11 @@
 				this.requires('2D, Canvas, Grid, Color, Collision')
 					.color('#BBBBBB')
 					//enables scene change
-					.bind('KeyDown', function(e){
+					/*.bind('KeyDown', function(e){
 						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC')){
 							Crafty.enterScene('Start');
 						}
-					});
+					});*/
 			}
 		});
 		
@@ -147,7 +147,12 @@
 			//border
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1160, y: 0, w: 30, h: 600});	//E side 
-			Crafty.e('Door').attr({x:790, y: 150, w: 50, h: 80});
+			Crafty.e('Door').attr({x:790, y: 150, w: 50, h: 80})
+			.bind('KeyDown', function(e){
+				if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC')){
+					Crafty.enterScene('level1');
+				}
+			});;
 			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.").textFont({size:'20px'});
 			Crafty.e('Words').attr({x: 100, y: 100, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC').textFont({size:'20px'});
 		});
