@@ -54,9 +54,11 @@
 		});
 		
 		//template for enemies
+		var ew;
 		Crafty.c('Enemy', {
 			health:30, type:1, attackStrength:0.5, velocity:2,	//type = attack & image type
 			init: function(){
+				ew = true;
 				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
 					.gravity('Solid')
 					.onHit('PlayerC', function(e){
@@ -67,7 +69,11 @@
 					})
 					.bind('EnterFrame', function(){
 						this.x += this.velocity;
-						if(this.health <= 0){this.destroy();}
+						if(this.health <= 0){
+						ew = false;
+						this.destroy();
+						return ew;
+						}
 					})
 			}
 		});
