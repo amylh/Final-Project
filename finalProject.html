@@ -128,7 +128,7 @@
 		//start screen
 		Crafty.defineScene('Start', function(){
 			Crafty.background('url(http://i.imgur.com/HdmmNJV.png)');
-			Crafty.e('Words').attr({x:100, y:100, w: 700, h: 100}).text("She's Not Here").textFont({size:'80px'});
+			Crafty.e('Words').attr({x:100, y:100, w: 700, h: 100}).text("She's Not Here").textFont({size:'90px'});
 			Crafty.e('Words').attr({x:200, y:250, w: 300, h: 100}).text("Press any key to begin playing").textFont({size:'15px'})
 				.bind('KeyDown', function(e){
 					Crafty.enterScene('level0');
