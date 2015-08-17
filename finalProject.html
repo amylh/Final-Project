@@ -224,6 +224,28 @@
 			//spawnFire(771,139);
 		});
 		
+		//LEVEL 3
+		
+         	Crafty.defineScene('level3', function(){
+		Crafty.background('url(http://i.imgur.com/FRAQq6V.jpg)');
+			spawnPlayer(150, 20); 
+			spawnEnemy(300, 140);
+				//water platform
+			Crafty.e('2D, DOM, Canvas, Color, Gravity')
+				.attr({alpha: 0.5, x:30, y: 400, w: 800, h: 5000})
+				.color('#248F8F');
+				 
+				 //iceberg standing platform
+			Crafty.e('2D, Canvas, Solid, Image, Collision')
+				.attr({x:125, y: 350, w: 200, h: 400})
+				.image('url(http://worldofviruses.unl.edu/ComicActivities/SoManyViruses/images/iceberg.png)');
+				
+				//blackbar at bottom
+			Crafty.e('Solid')
+				.attr({x: 0, y: 1030, w: 6000, h: 20});
+
+		});
+		
 		/** INITIATIONS & PLAYER FUNCTIONS **/
 		//start scene
 		Crafty.enterScene('Start');
