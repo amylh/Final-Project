@@ -63,7 +63,7 @@
 				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
 					.gravity('Solid')
 					.onHit('PlayerC', function(e){
-						e[0].obj.health -= this.attackStrength;
+						e[0].obj.health -= this.attackStrength - this.attackStrength*e[0].obj.shield;
 					})
 					.onHit('Solid', function(){
 						this.velocity *= -1;
@@ -141,8 +141,12 @@
 		//game over screen
 		Crafty.defineScene('Over', function(){
 			Crafty.background('url(http://i.imgur.com/c2A937j.png)');
-			Crafty.e('Words').attr({x: 100, y:100, w:600, h:100}).text("Game Over").textFont({size:'40px'});
-		
+			Crafty.e('Words').attr({x: 100, y:100, w:800, h:100}).text("You fell into eternal rest...").textFont({size:'40px'});
+			Crafty.e('Words').attr({x: 200, y:200, w:250, h:200}).text('Press any key to restart.')
+				.bind('KeyDown', function(e){
+					Crafty.enterScene('level1');
+					spawnPlayer(200,550);
+				}); 
 		});
 		
 		//tutorial screen
@@ -158,11 +162,11 @@
 			Crafty.e('Door').attr({x:790, y: 255, w: 50, h: 80, level:'level1'});
 			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.");
 			Crafty.e('Words').attr({x: 300, y:80, w: 300, h: 100}).text("^Your current ability.");
-			Crafty.e('Words').attr({x: 38, y: 100, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
+			Crafty.e('Words').attr({x: 38, y: 100, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack or use an ability. Use the X and C keys to switch abilities. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
 			spawnEnemy(790, 255);
 		});
 		
-		//Level 1 ALRIGHT LET'S ADD SOME ENEMIES UP HERE
+		//Level 1
 		Crafty.defineScene('level1', function(){
 			Crafty.background('#2E2E2F');
 			//PLATFORMS
@@ -185,6 +189,11 @@
 		//spawns player & misc.
 		var playerw = 30;
 		var playerh = 50;
+		var abilities = ['The classic Sword', 'Super Strength to smash through enemies and walls', 'Unleash your inner minion',
+						'Body Shield: immunity to all damage while activated', 'Roar to briefly stun enemies', 'Suck the life force out of your enemies',
+						'Heal yourself a bit at a time', 'Darts that gradually poison your enemies to death', 'Arrows of a Centaur', 
+						"Double Jumping - don't need spacebar to use; just press UP key twice", 'Water Blast - can also put out fires', 
+						'Breathe and swim underwater like a fish'];
 		var spawnPlayer = function(xpos, ypos){
 			kills = 0;	//reset amount of kills so doors can be locked
 			var player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh});
@@ -206,6 +215,7 @@
 			var slotSelector = Crafty.e('2D, Canvas, Color')
 				.attr({x: slotBars.x + player.slotSelect*40-40, y: slotBars.y + 40, w: 40, h:10})
 				.color('white');
+			var abilityText = Crafty.e('Words').attr({x: slotBarOutline.x, y: slotBarOutline.y - 15, w: 500, h: 40}).text('Your current ability: '+abilities[player.slotSelect-1]).textFont({size:'10px'});
 				
 			//update health & ability slot bars so they're visible at all times
 			var updateHealth = function(){
@@ -214,6 +224,7 @@
 				slotBarOutline.destroy();
 				slotBars.destroy();
 				slotSelector.destroy();
+				abilityText.destroy();
 				healthBarOutline = Crafty.e('2D, Canvas, Color')
 					.attr({x: -Crafty.viewport._x+18, y: -Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
 					.color('black');
@@ -229,6 +240,13 @@
 				slotSelector = Crafty.e('2D, Canvas, Color')
 					.attr({x: slotBars.x + player.slotSelect*40-40, y: slotBars.y + 40, w: 40, h:10})
 					.color('white');
+				abilityText = Crafty.e('Words').attr({x: slotBarOutline.x, y: slotBarOutline.y - 15, w: 500, h: 40}).text('Your current ability: '+abilities[player.slotSelect-1]).textFont({size:'10px'});
+				//game over screen
+				if(player.health <= 0){
+					Crafty.enterScene('Over');
+					Crafty.viewport._x = 0;
+					Crafty.viewport._y = 0;
+					}
 			}
 			player.bind('Moved', function(){updateHealth();});
 			player.onHit('Enemy', function(){updateHealth();});
@@ -237,13 +255,23 @@
 			player.bind('KeyDown', function(e) {
 				updateHealth();
 				//sword
-				//super strength
-				//gemini????
-				//body shield
-				//roar
-				//invisibility
+				/**if(player.slotSelect === 1){
+					if(e.key === Crafty.keys.SPACE){
+						Crafty.e('Projectile').attr({x: })
+					}
+				}**/
+				//super strength to KO enemies and smash through certain walls
+				//gemini???? unleash a demolisher
+				//body shield makes player immune to all damage
+				if(player.slotSelect === 4){
+					if(e.key === Crafty.keys.SPACE){
+						player.shield = 1;
+					}
+				}
+				//roar to briefly stun enemies
+				//invisibility / suck life force out of enemies
 				//healing
-				if(player.slotSelect === 7){
+				else if(player.slotSelect === 7){
 					if(e.key === Crafty.keys.SPACE){
 						player.health += 10;
 						if(player.health > player.maxHealth){player.health = player.maxHealth;}
@@ -279,7 +307,7 @@
 				//water blast or tsunami? can also put out fires and push back enemies
 				else if(player.slotSelect === 11){
 					if(e.key === Crafty.keys.SPACE){
-						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 25, xspeed: 8*player.dir, strength: 5}).color('#008B8B');
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 25, xspeed: 8*player.dir, strength: 4}).color('#008B8B');
 					}
 				}
 				//breathe underwater
