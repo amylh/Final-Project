@@ -255,21 +255,22 @@
 			player.bind('KeyDown', function(e) {
 				updateHealth();
 				//sword
-				/**if(player.slotSelect === 1){
+				if(player.slotSelect === 1){
 					if(e.key === Crafty.keys.SPACE){
-						Crafty.e('Projectile').attr({x: })
-					}
-				}**/
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 25, h: 5, xspeed: 7*player.dir, strength: 5}).color('#C1C1C1');
+						Crafty.e('Projectile').attr({x: this._x + 3, y: this._y + 0.4*playerh, w:5, h: 15, xspeed: 7*player.dir, strength: 5}).color('#6E5023');
+					};
+				}
 				//super strength to KO enemies and smash through certain walls
 				//gemini???? unleash a demolisher
 				//body shield makes player immune to all damage
-				if(player.slotSelect === 4){
+				else if(player.slotSelect === 4){
 					if(e.key === Crafty.keys.SPACE){
 						player.shield = 1;
 					}
 				}
 				//roar to briefly stun enemies
-				//invisibility / suck life force out of enemies
+				//suck the life force out of enemies
 				//healing
 				else if(player.slotSelect === 7){
 					if(e.key === Crafty.keys.SPACE){
