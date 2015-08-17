@@ -56,11 +56,10 @@
 		});
 		
 		//template for enemies
-		var ew;
+		var kills = 0;
 		Crafty.c('Enemy', {
 			health:30, type:1, attackStrength:0.5, velocity:2,	//type = attack & image type
 			init: function(){
-				ew = true;
 				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
 					.gravity('Solid')
 					.onHit('PlayerC', function(e){
@@ -72,9 +71,8 @@
 					.bind('EnterFrame', function(){
 						this.x += this.velocity;
 						if(this.health <= 0){
-						ew = false;
-						this.destroy();
-						return ew;
+							kills += 1;
+							this.destroy();
 						}
 					})
 			}
@@ -100,15 +98,19 @@
 		
 		//template for all doors
 		Crafty.c('Door', {
-			level:'level0',
+			level:'level0', locked:false, killsNeeded:0,
 			init: function(){
 				this.requires('2D, Canvas, Grid, Color, Collision')
 					.attr({w: 50, h: 80})
 					.color('#BBBBBB')
 					//enables scene change
 					.bind('KeyDown', function(e){
-						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && ew === false){
+						if(kills >= this.killsNeeded){this.locked = false;}
+						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === false){
 							Crafty.enterScene(this.level);
+						}
+						else if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === true){
+							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w: 100, h: 20}).text('Locked!');
 						}
 					});
 			}
@@ -171,7 +173,7 @@
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:1550, y: 250, level:'level2'});
+			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level2'});
 			Crafty.e('Words').attr({x:50, y:100, w:400}).text("explain the abilities and which thing is what ability; maybe we should cut down on them to make it easier on the player or at least provide a picture of the ability ex: dart underneath whichever one controls the poison dart").textColor('#CCCCCC').textFont({size:'20px'});
 			spawnPlayer(200, 550);
 			spawnEnemy(770, 140);
@@ -184,6 +186,7 @@
 		var playerw = 30;
 		var playerh = 50;
 		var spawnPlayer = function(xpos, ypos){
+			kills = 0;	//reset amount of kills so doors can be locked
 			var player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh});
 			Crafty.viewport.follow(player,0,0);			//camera to follow player
 			//health bar
