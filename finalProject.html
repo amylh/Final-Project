@@ -78,6 +78,30 @@
 			}
 		});
 		
+		//template for forest fires
+		var kills = 0;
+		Crafty.c('Fire', {
+			health:30, type:1, attackStrength:0.5, velocity:2,	//type = attack & image type
+			init: function(){
+				this.requires('2D, Canvas, Twoway, Gravity, Image, Collision')
+					.gravity('Solid')
+					.image('fire.png')
+					.onHit('PlayerC', function(e){
+						e[0].obj.health -= this.attackStrength - this.attackStrength*e[0].obj.shield;
+					})
+					.onHit('Solid', function(){
+						this.velocity *= -1;
+					})
+					.bind('EnterFrame', function(){
+						this.x += this.velocity;
+						if(this.health <= 0){
+							kills += 1;
+							this.destroy();
+						}
+					})
+			}
+		});
+		
 		//template for projectiles (both player & enemy)
 		Crafty.c('Projectile', {
 			strength:0, xspeed:0,
@@ -202,6 +226,23 @@
 			Crafty.e('Words').attr({x:50, y:100, w:400}).text("explain the abilities and which thing is what ability; maybe we should cut down on them to make it easier on the player or at least provide a picture of the ability ex: dart underneath whichever one controls the poison dart").textColor('#CCCCCC').textFont({size:'20px'});
 			spawnPlayer(200, 550);
 			spawnEnemy(770, 140);
+		});
+		
+		//Level 2 Forest
+		Crafty.defineScene('level2', function(){
+			Crafty.background('url(http://orig08.deviantart.net/213e/f/2015/183/3/6/background_practice___forest_by_christin_cat_bat-d8otwc1.png)');
+			//PLATFORMS
+			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50}).color('#5C3317');
+			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20}).color('#5C3317');
+			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20}).color('#5C3317');
+			//BORDER
+			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600}).color('#5C3317');	//W side
+			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600}).color('#5C3317');	//E side 
+			//EXIT
+			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level3'});
+			spawnPlayer(200, 550);
+			spawnEnemy(770, 140);
+			spawnFire(771,139);
 		});
 		
 		/** INITIATIONS & PLAYER FUNCTIONS **/
