@@ -154,7 +154,7 @@
 			Crafty.e('Words').attr({x:270, y:300, w: 300, h: 100}).text("Press any key to begin playing").textFont({size:'15px'})
 				.bind('KeyDown', function(e){
 					Crafty.enterScene('level0');
-					initials(200,550);
+					//initials(200, 550);
 					spawnPlayer(200,550);
 				}); 
 		});
@@ -166,7 +166,7 @@
 			Crafty.e('Words').attr({x: 200, y:200, w:250, h:200}).text('Press any key to restart.')
 				.bind('KeyDown', function(e){
 					Crafty.enterScene('level1');
-					spawnPlayer(200,550);
+					//spawnPlayer(200,550);
 				}); 
 		});
 		
@@ -219,8 +219,8 @@
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600}).color('#5C3317');	//E side 
 			//EXIT
 			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level3'});
-			spawnPlayer(200, 550);
 			spawnEnemy(770, 140);
+			spawnPlayer(200, 550);
 			//spawnFire(771,139);
 		});
 		
@@ -235,43 +235,18 @@
 						'Heal yourself a bit at a time', 'Darts that gradually poison your enemies to death', 'Arrows of a Centaur', 
 						"Double Jumping - don't need spacebar to use; just press UP key twice", 'Water Blast - can also put out fires', 
 						'Breathe and swim underwater like a fish'];
-		var initials = function(xpos, ypos){
+		var spawnPlayer = function(xpos, ypos){
 			kills = 0;	//reset amount of kills so doors can be locked
-			var player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh});
+			player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh});
 			Crafty.viewport.follow(player,0,0);			//camera to follow player
 			//health bar
-			var healthBarOutline = Crafty.e('2D, Canvas, Color')
+			healthBarOutline = Crafty.e('2D, Canvas, Color')
 				.attr({x: -Crafty.viewport._x+18, y: Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
 				.color('black');
-			var healthBar = Crafty.e('2D, Canvas, Color')
+			healthBar = Crafty.e('2D, Canvas, Color')
 				.attr({x: -Crafty.viewport._x+23, y: Crafty.viewport._y+30, w: player.health*2, h: 20})
 				.color('green');
 			//ability slots
-			var slotBarOutline = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+300, y: -Crafty.viewport._y+25, w:490, h:50})
-				.color('black');
-			var slotBars = Crafty.e('2D, DOM, Image')
-				.attr({x: -Crafty.viewport._x+305, y: -Crafty.viewport._y+30, w: 480, h:40})
-				.image('http://i.imgur.com/oVWgV3l.png');
-			var slotSelector = Crafty.e('2D, Canvas, Color')
-				.attr({x: slotBars.x + player.slotSelect*40-40, y: slotBars.y + 40, w: 40, h:10})
-				.color('white');
-			var abilityText = Crafty.e('Words').attr({x: slotBarOutline.x, y: slotBarOutline.y - 15, w: 500, h: 40}).text('Your current ability: '+abilities[player.slotSelect-1]).textFont({size:'10px'});
-		}
-		//update health & ability slot bars so they're visible at all times
-		var updateHealth = function(){
-			healthBarOutline.destroy();
-			healthBar.destroy();
-			slotBarOutline.destroy();
-			slotBars.destroy();
-			slotSelector.destroy();
-			abilityText.destroy();
-			healthBarOutline = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+18, y: -Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
-				.color('black');
-			healthBar = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+23, y: -Crafty.viewport._y+30, w: player.health*2, h: 20})
-				.color('green');
 			slotBarOutline = Crafty.e('2D, Canvas, Color')
 				.attr({x: -Crafty.viewport._x+300, y: -Crafty.viewport._y+25, w:490, h:50})
 				.color('black');
@@ -282,22 +257,42 @@
 				.attr({x: slotBars.x + player.slotSelect*40-40, y: slotBars.y + 40, w: 40, h:10})
 				.color('white');
 			abilityText = Crafty.e('Words').attr({x: slotBarOutline.x, y: slotBarOutline.y - 15, w: 500, h: 40}).text('Your current ability: '+abilities[player.slotSelect-1]).textFont({size:'10px'});
-			//game over screen
-			if(player.health <= 0){
-				Crafty.enterScene('Over');
-				Crafty.viewport._x = 0;
-				Crafty.viewport._y = 0;
+		
+			//update health & ability slot bars so they're visible at all times
+			updateHealth = function(){
+				healthBarOutline.destroy();
+				healthBar.destroy();
+				slotBarOutline.destroy();
+				slotBars.destroy();
+				slotSelector.destroy();
+				abilityText.destroy();
+				healthBarOutline = Crafty.e('2D, Canvas, Color')
+					.attr({x: -Crafty.viewport._x+18, y: -Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
+					.color('black');
+				healthBar = Crafty.e('2D, Canvas, Color')
+					.attr({x: -Crafty.viewport._x+23, y: -Crafty.viewport._y+30, w: player.health*2, h: 20})
+					.color('green');
+				slotBarOutline = Crafty.e('2D, Canvas, Color')
+					.attr({x: -Crafty.viewport._x+300, y: -Crafty.viewport._y+25, w:490, h:50})
+					.color('black');
+				slotBars = Crafty.e('2D, DOM, Image')
+					.attr({x: -Crafty.viewport._x+305, y: -Crafty.viewport._y+30, w: 480, h:40})
+					.image('http://i.imgur.com/oVWgV3l.png');
+				slotSelector = Crafty.e('2D, Canvas, Color')
+					.attr({x: slotBars.x + player.slotSelect*40-40, y: slotBars.y + 40, w: 40, h:10})
+					.color('white');
+				abilityText = Crafty.e('Words').attr({x: slotBarOutline.x, y: slotBarOutline.y - 15, w: 500, h: 40}).text('Your current ability: '+abilities[player.slotSelect-1]).textFont({size:'10px'});
+				//game over screen
+				if(player.health <= 0){
+					Crafty.enterScene('Over');
+					Crafty.viewport._x = 0;
+					Crafty.viewport._y = 0;
+				}
 			}
-		}
-		//respawn player	
-		var spawnPlayer = function(xpos, ypos){
-			player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh, health:30});
-			Crafty.viewport.follow(player,0,0);			//camera to follow player
 			player.bind('EnterFrame', function(){updateHealth();});
 			
 		/** ABILITIES **/
 			player.bind('KeyDown', function(e) {
-				//updateHealth();
 				//sword
 				if(player.slotSelect === 1){
 					if(e.key === Crafty.keys.SPACE){
@@ -376,7 +371,7 @@
 				//breathe underwater
 			});
 		}
-		
+
 		/** ENEMY LOGIC **/
 		var spawnEnemy = function(xpos, ypos){
 			Crafty.e('Enemy').attr({x: xpos, y: ypos, w: 30, h:50}).color('#000');
@@ -385,3 +380,4 @@
     </script>
   </body>
 </html>
+
