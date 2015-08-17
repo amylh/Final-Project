@@ -96,18 +96,22 @@
 		var playerh = 50;
 		var player = Crafty.e('playerC').attr({x: 200, y: 520, w: playerw, h: playerh});
 		Crafty.viewport.follow(player,0,0);			//camera to follow player
-		alert(player.slotSelect);
 		
 		/** ABILITIES **/
 		player.bind('KeyDown', function(e) {
 			//sword
+			if(player.slotSelect === 1){
+				if(e.key === Crafty.keys.SPACE){
+					//
+				}
+			}
 			//super strength
 			//gemini????
 			//body shield
 			//roar
 			//invisibility
 			//healing
-			if(player.slotSelect === 7){
+			else if(player.slotSelect === 7){
 				if(e.key === Crafty.keys.SPACE){
 					player.health += 30;
 					if(player.health > player.maxHealth){player.health = player.maxHealth;}
@@ -116,13 +120,13 @@
 			//poison darts
 			else if(player.slotSelect === 8){
 				if(e.key === Crafty.keys.SPACE){
-					Crafty.e('projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 15, h: 10, xspeed: 10*dir}).color('#2C7A32');
+					Crafty.e('projectile').attr({x: this._x, y: this._y + 0.5*playerh, w:15, h:10, xspeed:5*dir}).color('#2C7A32');
 				}
 			}
 			//arrows
 			else if(player.slotSelect === 9){
 				if(e.key === Crafty.keys.SPACE){
-					Crafty.e('projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 5, xspeed: 10*dir}).color('#6E5023');
+					Crafty.e('projectile').attr({x: this._x, y: this._y + 0.3*playerh, w:25, h:5, xspeed:10*dir}).color('#6E5023');
 				}
 			}
 			//double jump
