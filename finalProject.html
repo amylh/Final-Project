@@ -207,7 +207,7 @@
 			Crafty.e('Door').attr({x:790, y: 255, w: 50, h: 80, level:'level1'});
 			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.");
 			Crafty.e('Words').attr({x: 300, y:80, w: 300, h: 100}).text("^Your current ability.");
-			Crafty.e('Words').attr({x: 38, y: 100, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack or use an ability. Use the X and C keys to switch abilities. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
+			Crafty.e('Words').attr({x: 38, y: 120, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack or use an ability. Use the X and C keys to switch abilities. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
 			spawnEnemy(790, 255);
 		});
 		
@@ -223,7 +223,7 @@
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
 			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level2'});
-			Crafty.e('Words').attr({x:50, y:100, w:400}).text("explain the abilities and which thing is what ability; maybe we should cut down on them to make it easier on the player or at least provide a picture of the ability ex: dart underneath whichever one controls the poison dart").textColor('#CCCCCC').textFont({size:'20px'});
+			Crafty.e('Words').attr({x:50, y:100, w:400}).text("To change the ability click C.       To use the ability click SPACEBAR, except for Capricorn (Orange) press UP ARROW twice for double jump. Practice using the abilities and defeat the enemy before continuing.").textColor('#CCCCCC').textFont({size:'20px'});
 			spawnPlayer(200, 550);
 			spawnEnemy(770, 140);
 		});
