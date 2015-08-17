@@ -82,7 +82,7 @@
 							Crafty.enterScene('Over');
 						};
 						return this.health;
-						
+
 					});
 			}
 		});
@@ -170,7 +170,9 @@
 				}
 			});;
 			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.").textFont({size:'20px'});
-			Crafty.e('Words').attr({x: 100, y: 100, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC').textFont({size:'20px'});
+			Crafty.e('Words').attr({x: 40, y: 170, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack, C to change ability. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC').textFont({size:'20px'});
+			Crafty.e('Words').attr({x:430, y:100, w:400}).text("Abilities correspond with the Zodiac symbol, further instruction will be provided in next level.").textColor('#CCCCCC').textFont({size:'20px'});
+				//we should talk about the abilities since the player is expected to use them in the next level		
 		});
 		
 		//ALRIGHT LET'S ADD SOME ENEMIES UP HERE
@@ -192,7 +194,7 @@
 			}
 			});
 			
-			
+			Crafty.e('Words').attr({x:50, y:100, w:400}).text("explain the abilities and which thing is what ability; maybe we should cut down on them to make it easier on the player or at least provide a picture of the ability ex: dart underneath whichever one controls the poison dart").textColor('#CCCCCC').textFont({size:'20px'});
 			SpawnEnemy(770, 140);
 		});
 		
@@ -283,4 +285,5 @@
 		}
     </script>
   </body>
+</html>
 </html>
