@@ -237,6 +237,22 @@
 			player.bind('KeyDown', function(e) {
 				updateHealth();
 				//sword
+								if(player.slotSelect === 1){
+					if (this.dir == 1){
+						if(e.key === Crafty.keys.SPACE){
+							Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 25, h: 5, xspeed: 7*player.dir, strength: 5}).color('#C1C1C1');
+							Crafty.e('Projectile').attr({x: this._x + 3, y: this._y + 0.4*playerh, w:5, h: 15, xspeed: 7*player.dir, strength: 5}).color('#6E5023');
+						};
+					};
+					if (this.dir === -1){
+						if(e.key === Crafty.keys.SPACE){
+							Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 25, h: 5, xspeed: 7*player.dir, strength: 5}).color('#C1C1C1');
+							Crafty.e('Projectile').attr({x: this._x + 18, y: this._y + 0.4*playerh, w:5, h: 15, xspeed: 7*player.dir, strength: 5}).color('#6E5023');
+					};
+					
+					};
+				
+				};
 				//super strength
 				//gemini????
 				//body shield
