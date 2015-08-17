@@ -177,15 +177,15 @@
 		Crafty.defineScene('level1', function(){
 			Crafty.background('#2E2E2F');
 			
-			//PLATFORMS
+					//PLATFORMS
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});
-			Crafty.e('Solid').attr({x: 0, y: 420, w: 400, h: 20});
-			Crafty.e('Solid').attr({x: 770, y: 230, w: 400, h: 20});
+			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20});
+			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20});
 			//BORDER
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:800, y: 130, w: 50, h: 100})
+			Crafty.e('Door').attr({x:1550, y: 230, w: 50, h: 100})
 			.bind('KeyDown', function(e){
 				if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && ew == false){
 				Crafty.enterScene('level2');
