@@ -105,7 +105,7 @@
 					.color('#BBBBBB')
 					//enables scene change
 					.bind('KeyDown', function(e){
-						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC')){
+						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && ew === false){
 							Crafty.enterScene(this.level);
 						}
 					});
