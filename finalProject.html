@@ -175,8 +175,8 @@
 		//start screen
 		Crafty.defineScene('Start', function(){
 			Crafty.background('url(http://i.imgur.com/HdmmNJV.png)');
-			Crafty.e('Words').attr({x:100, y:100, w: 700, h: 100}).text("She's Not Here").textFont({size:'90px'});
-			Crafty.e('Words').attr({x:200, y:250, w: 300, h: 100}).text("Press any key to begin playing").textFont({size:'15px'})
+			Crafty.e('Words').attr({x:70, y:150, w: 700, h: 100}).text("She's Not Here").textFont({size:'90px'});
+			Crafty.e('Words').attr({x:270, y:300, w: 300, h: 100}).text("Press any key to begin playing").textFont({size:'15px'})
 				.bind('KeyDown', function(e){
 					Crafty.enterScene('level0');
 					spawnPlayer(200,550);
@@ -207,8 +207,8 @@
 			Crafty.e('Door').attr({x:790, y: 255, w: 50, h: 80, level:'level1'});
 			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.");
 			Crafty.e('Words').attr({x: 300, y:80, w: 300, h: 100}).text("^Your current ability.");
-			Crafty.e('Words').attr({x: 38, y: 120, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack or use an ability. Use the X and C keys to switch abilities. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
-			spawnEnemy(790, 255);
+			Crafty.e('Words').attr({x: 100, y: 180, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack or use an ability. Use the X and C keys to switch abilities. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
+			//spawnEnemy(790, 255);  //I don't think an enemy should be on the tutorial screen if the player at this point doesn't know how to defeat it
 		});
 		
 		//Level 1
@@ -224,7 +224,7 @@
 			//EXIT
 			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level2'});
 			Crafty.e('Words').attr({x:50, y:100, w:400}).text("To change the ability click C or X, to use it click SPACE (unless other instruction is given).").textColor('#CCCCCC').textFont({size:'20px'});
-			Crafty.e('Words').attr({x:100, y:200, w:400}).text("A description of the ability is above the signs.").textColor('#CCCCCC').textFont({size:'20px'});
+			Crafty.e('Words').attr({x:100, y:200, w:400}).text("A description of the ability is above the signs.").textColor('#CCCCCC').textColor('#CCCCCC').textFont({size:'20px'});
 			Crafty.e('Words').attr({x:200, y:250, w:400}).text("Practice using the abilities by defeating the enemy before continuing.").textColor('#CCCCCC').textFont({size:'20px'});
 			spawnPlayer(200, 550);
 			spawnEnemy(770, 140);
@@ -237,7 +237,7 @@
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50}).color('#5C3317');
 			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20}).color('#5C3317');
 			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20}).color('#5C3317');
-			Crafty.e('Solid').attr({x: 600, y: 100, w: 400, h: 100}).color('#5C3317');
+			Crafty.e('Solid').attr({x: 600, y: 100, w: 400, h: 50}).color('#5C3317');
 			//BORDER
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600}).color('#5C3317');	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600}).color('#5C3317');	//E side 
