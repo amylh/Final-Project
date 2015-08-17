@@ -10,32 +10,6 @@
 	<script>
 		Crafty.init(800,600, document.getElementById('game'));	//initiate crafty & window
 		
-		//SPAWNS ENEMIES
-		var ew = true;
-		function SpawnEnemy(x, y) {
-		ew = true;
-		Crafty.e("enemy, 2D, Canvas, Color, Twoway, Gravity, Collision")
-		.color('#ff0000')
-		.attr({ x: x, y: y, w: 15, h: 40, dX: 2 })
-		.gravity('Solid')
-		.bind('EnterFrame', function () {
-			this.x += this.dX;
-		})
-		.onHit("Solid", function() {
-			this.dX *= -1;
-		})
-		.onHit("Projectile", function(){
-			this.destroy();
-			ew = false;
-		})
-		.bind('EnterFrame', function () {			
-			if (this.x <= 0) {
-				this.x = 0;
-				this.dX *= -1;
-			}
-		});
-		};
-		
 		/** CLASSES **/
 		//template for solids
 		Crafty.c('Solid', {
@@ -51,7 +25,7 @@
 			init: function() {
 				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
 					.twoway(4,7)	//built-in movement/jumping function
-					.color('black')
+					.color('white')
 					.gravity('Solid')
 					.bind('Moved', function(p) {	//executes the function when the 'Moved' event occurs
 						if (this.hit('Solid')){
@@ -75,28 +49,32 @@
 							this.slotSelect -= 1;
 							if(this.slotSelect === 1){this.slotSelect = 12;}
 						}
-					})
-					.onHit('enemy', function(){
-						this.health = this.health - 1;
-						if (this.health <= 0){
-							Crafty.enterScene('Over');
-						};
-						return this.health;
-
 					});
 			}
 		});
 		
 		//template for enemies
-		/**Crafty.c('Enemy', {
+		Crafty.c('Enemy', {
+			health:30, type:1, attackStrength:0.5, velocity:2,	//type = attack & image type
 			init: function(){
-				this.requires('2D, Canvas, Gravity, Color, Collision')
-					.
+				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
+					.gravity('Solid')
+					.onHit('PlayerC', function(e){
+						e[0].obj.health -= this.attackStrength;
+					})
+					.onHit('Solid', function(){
+						this.velocity *= -1;
+					})
+					.bind('EnterFrame', function(){
+						this.x += this.velocity;
+						if(this.health <= 0){this.destroy();}
+					})
 			}
-		});**/
+		});
 		
 		//template for projectiles (both player & enemy)
 		Crafty.c('Projectile', {
+			strength:0,
 			init: function(){
 				this.requires('2D, DOM, Color, Collision')
 					.bind('EnterFrame', function(){
@@ -105,20 +83,26 @@
 							this.destroy();	//destroy the bullet if it leaves the visible screen portion
 						}
 					})
+					.onHit('Enemy', function(e){
+						e[0].obj.health -= this.strength;
+						this.destroy();
+					});
 			}
 		});
 		
 		//template for all doors
 		Crafty.c('Door', {
+			level:'level0',
 			init: function(){
 				this.requires('2D, Canvas, Grid, Color, Collision')
+					.attr({w: 50, h: 80})
 					.color('#BBBBBB')
 					//enables scene change
-					/*.bind('KeyDown', function(e){
+					.bind('KeyDown', function(e){
 						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC')){
-							Crafty.enterScene('Start');
+							Crafty.enterScene(this.level);
 						}
-					});*/
+					});
 			}
 		});
 		
@@ -128,10 +112,9 @@
 				this.requires('2D, DOM, Text')
 					.unselectable()
 					.textColor('white')
-					.textFont({type:'italic', family:'Verdana'});
+					.textFont({type:'italic', family:'Verdana', size:'20px'});
 			}
 		});
-		
 		
 		/** LEVEL SCREENS **/
 		//start screen
@@ -141,10 +124,11 @@
 			Crafty.e('Words').attr({x:200, y:250, w: 300, h: 100}).text("Press any key to begin playing").textFont({size:'15px'})
 				.bind('KeyDown', function(e){
 					Crafty.enterScene('level0');
-					spawn(200,550);
+					spawnPlayer(200,550);
 				}); 
 		});
 		
+		//game over screen
 		Crafty.defineScene('Over', function(){
 			Crafty.background('url(http://i.imgur.com/c2A937j.png)');
 			Crafty.e('Words').attr({x: 00, y:100, w:600, h:100}).text("Game Over").textFont({size:'40px'});
@@ -156,30 +140,22 @@
 			Crafty.background('#2E2E2F');
 			//platforms
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1160, h: 50}); //floor
-			Crafty.e('Solid').attr({x: 0, y: 440, w: 400, h: 20});
-			Crafty.e('Solid').attr({x:420, y: 335, w: 400, h: 20});
-			Crafty.e('Solid').attr({x:770, y: 230, w: 400, h: 20});
+			Crafty.e('Solid').attr({x: 420, y: 440, w: 400, h: 160});
+			Crafty.e('Solid').attr({x:770, y: 335, w: 400, h: 265});
 			//border
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1160, y: 0, w: 30, h: 600});	//E side 
-			Crafty.e('Door').attr({x:790, y: 150, w: 50, h: 80})
-			.bind('KeyDown', function(e){
-				if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC')){
-					Crafty.enterScene('level1');
-					spawn(200, 550);
-				}
-			});;
-			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.").textFont({size:'20px'});
-			Crafty.e('Words').attr({x: 40, y: 170, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack, C to change ability. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC').textFont({size:'20px'});
-			Crafty.e('Words').attr({x:430, y:100, w:400}).text("Abilities correspond with the Zodiac symbol, further instruction will be provided in next level.").textColor('#CCCCCC').textFont({size:'20px'});
-				//we should talk about the abilities since the player is expected to use them in the next level		
+			Crafty.e('Door').attr({x:790, y: 255, w: 50, h: 80, level:'level1'});
+			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.");
+			Crafty.e('Words').attr({x: 300, y:80, w: 300, h: 100}).text("^Your current ability.");
+			Crafty.e('Words').attr({x: 38, y: 100, w: 400}).text("Use WASD or arrow keys to jump/move, SPACEBAR to attack. Press DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
+			spawnEnemy(790, 255);
 		});
 		
-		//ALRIGHT LET'S ADD SOME ENEMIES UP HERE
+		//Level 1 ALRIGHT LET'S ADD SOME ENEMIES UP HERE
 		Crafty.defineScene('level1', function(){
 			Crafty.background('#2E2E2F');
-			
-					//PLATFORMS
+			//PLATFORMS
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});
 			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20});
 			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20});
@@ -187,32 +163,27 @@
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:1550, y: 230, w: 50, h: 100})
-			.bind('KeyDown', function(e){
-				if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && ew == false){
-				Crafty.enterScene('level2');
-			}
-			});
-			
+			Crafty.e('Door').attr({x:1550, y: 250, level:'level2'});
 			Crafty.e('Words').attr({x:50, y:100, w:400}).text("explain the abilities and which thing is what ability; maybe we should cut down on them to make it easier on the player or at least provide a picture of the ability ex: dart underneath whichever one controls the poison dart").textColor('#CCCCCC').textFont({size:'20px'});
-			SpawnEnemy(770, 140);
+			spawnPlayer(200, 550);
+			spawnEnemy(770, 140);
 		});
 		
-		/** INITIATIONS **/
+		/** INITIATIONS & PLAYER FUNCTIONS **/
 		//start scene
 		Crafty.enterScene('Start');
 		//spawns player & misc.
 		var playerw = 30;
 		var playerh = 50;
-		var spawn = function(xpos, ypos){
+		var spawnPlayer = function(xpos, ypos){
 			var player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh});
 			Crafty.viewport.follow(player,0,0);			//camera to follow player
 			//health bar
 			var healthBarOutline = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+38, y: Crafty.viewport._y+25, w: player.health*2+10, h: 30})
+				.attr({x: -Crafty.viewport._x+18, y: Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
 				.color('black');
 			var healthBar = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+43, y: Crafty.viewport._y+30, w: player.health*2, h: 20})
+				.attr({x: -Crafty.viewport._x+23, y: Crafty.viewport._y+30, w: player.health*2, h: 20})
 				.color('green');
 			//ability slots
 			var slotBarOutline = Crafty.e('2D, Canvas, Color')
@@ -221,18 +192,18 @@
 			var slotBars = Crafty.e('2D, DOM, Image')
 				.attr({x: -Crafty.viewport._x+305, y: -Crafty.viewport._y+30, w: 480, h:40})
 				.image('http://i.imgur.com/oVWgV3l.png');
-			
-			//update health & ability slot bars
-			player.bind('Moved', function(){
+				
+			//update health & ability slot bars so they're visible at all times
+			var updateHealth = function(){
 				healthBarOutline.destroy();
 				healthBar.destroy();
 				slotBarOutline.destroy();
 				slotBars.destroy();
 				healthBarOutline = Crafty.e('2D, Canvas, Color')
-					.attr({x: -Crafty.viewport._x+38, y: -Crafty.viewport._y+25, w: player.health*2+10, h: 30})
+					.attr({x: -Crafty.viewport._x+18, y: -Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
 					.color('black');
 				healthBar = Crafty.e('2D, Canvas, Color')
-					.attr({x: -Crafty.viewport._x+43, y: -Crafty.viewport._y+30, w: player.health*2, h: 20})
+					.attr({x: -Crafty.viewport._x+23, y: -Crafty.viewport._y+30, w: player.health*2, h: 20})
 					.color('green');
 				slotBarOutline = Crafty.e('2D, Canvas, Color')
 					.attr({x: -Crafty.viewport._x+300, y: -Crafty.viewport._y+25, w:490, h:50})
@@ -240,7 +211,9 @@
 				slotBars = Crafty.e('2D, DOM, Image')
 					.attr({x: -Crafty.viewport._x+305, y: -Crafty.viewport._y+30, w: 480, h:40})
 					.image('http://i.imgur.com/oVWgV3l.png');
-			});
+			}
+			player.bind('Moved', function(){updateHealth();});
+			player.onHit('Enemy', function(){updateHealth();});
 			
 		/** ABILITIES **/
 			player.bind('KeyDown', function(e) {
@@ -253,20 +226,25 @@
 				//healing
 				if(player.slotSelect === 7){
 					if(e.key === Crafty.keys.SPACE){
-						player.health += 30;
+						player.health += 10;
 						if(player.health > player.maxHealth){player.health = player.maxHealth;}
+						updateHealth();
 					}
 				}
-				//poison darts
+				//poison darts that slowly decrease an enemy's health until it dies, once hit (THIS NEEDS WORK)
 				else if(player.slotSelect === 8){
 					if(e.key === Crafty.keys.SPACE){
-						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 15, h: 10, xspeed: 7*player.dir}).color('#2C7A32');
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 15, h: 10, xspeed: 7*player.dir, strength: 5}).color('#2C7A32')
+							.onHit('Enemy', function(e){
+								var etemp = e;
+								setInterval(function(etemp){etemp[0].obj.health -= this.strength;}, 1000);
+							});
 					}
 				}
-				//arrows
+				//arrows that do the most damage out of all the projectiles
 				else if(player.slotSelect === 9){
 					if(e.key === Crafty.keys.SPACE){
-						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 5, xspeed: 10*player.dir}).color('#6E5023');
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 5, xspeed: 10*player.dir, strength: 10}).color('#6E5023');
 					}
 				}
 				//double jump
@@ -279,11 +257,21 @@
 						this._canJumpAgain = false;
 					}
 				}
-				//water blast or tsunami
+				//water blast or tsunami? can also put out fires and push back enemies
+				else if(player.slotSelect === 11){
+					if(e.key === Crafty.keys.SPACE){
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 25, xspeed: 8*player.dir, strength: 5}).color('#008B8B');
+					}
+				}
 				//breathe underwater
 			});
 		}
+		
+		/** ENEMY LOGIC **/
+		var spawnEnemy = function(xpos, ypos){
+			Crafty.e('Enemy').attr({x: xpos, y: ypos, w: 30, h:50}).color('#000');
+		}
+		
     </script>
   </body>
-</html>
 </html>
