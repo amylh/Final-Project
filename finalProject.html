@@ -23,6 +23,14 @@
 		Crafty.init(800,600, document.getElementById('game'));	//initiate crafty & window
 		
 		/** CLASSES **/
+		//MUSIC
+			Crafty.audio.add("song", [
+			"1am.mp3"
+			]);
+		
+
+		
+		
 		//template for solids
 		Crafty.c('Solid', {
 			breakable:false,
@@ -58,13 +66,14 @@
 							this.attr({x: p.x});	//so that the sprite can't pass through solids horizontally
 						}
 					})
+					
 					.bind('KeyDown', function(e){	
 						//keep track of which direction player is facing
-						if(e.key === Crafty.keys.RIGHT_ARROW || e.key === Crafty.keys.D){
+						if(e.key === Crafty.keys.RIGHT_ARROW){
 							this.dir = 1;
 							this.image(this.sprite).unflip('X');
 						}
-						else if(e.key === Crafty.keys.LEFT_ARROW || e.key === Crafty.keys.A){
+						else if(e.key === Crafty.keys.LEFT_ARROW){
 							this.dir = -1;
 							this.image(this.sprite).flip('X');
 						}
@@ -134,10 +143,10 @@
 					//enables scene change
 					.bind('KeyDown', function(e){
 						if(kills >= this.killsNeeded){this.locked = false;}
-						if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === false){
+						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === false){
 							Crafty.enterScene(this.level);
 						}
-						else if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === true){
+						else if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === true){
 							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
 						}
 					});
@@ -158,11 +167,17 @@
 		//start screen
 		Crafty.defineScene('Start', function(){
 			Crafty.background('url(http://i.imgur.com/HdmmNJV.png)');
-			Crafty.e('Words').attr({x:70, y:150, w: 700, h: 100}).text("She's Not Here").textFont({size:'90px'});
-			Crafty.e('Words').attr({x:270, y:300, w: 300, h: 100}).text("Press any key to begin playing").textFont({size:'15px'})
-				.bind('KeyDown', function(e){
+			Crafty.e('Words')
+			.attr({x:70, y:150, w: 700, h: 100})
+			.text("She's Not Here").textFont({size:'90px'});
+			Crafty.audio.play("song", -1);
+			Crafty.e('Words')
+			.attr({x:270, y:300, w: 300, h: 100})
+			.text("Press any key to begin playing").textFont({size:'15px'})
+			.bind('KeyDown', function(e){
 					Crafty.enterScene('level0');
 					spawnPlayer(200,550);
+					Crafty.audio.remove("song");
 				}); 
 		});
 		
@@ -171,7 +186,8 @@
 			Crafty.background('url(http://i.imgur.com/c2A937j.png)');
 			Crafty.e('Words').attr({x: 100, y:100, w:800, h:100}).text('You fell into eternal rest...').textFont({size:'40px'});
 			Crafty.e('Words').attr({x: 200, y:200, w:250, h:200}).text('Press any key to restart.')
-				.bind('KeyDown', function(e){
+			 Crafty.audio.play("song")
+			.bind('KeyDown', function(e){
 					Crafty.enterScene('level1');
 				}); 
 		});
@@ -189,7 +205,7 @@
 			Crafty.e('Door').attr({x:790, y: 255, w: 50, h: 80, level:'level1'});
 			Crafty.e('Words').attr({x:38, y: 50, w: 300, h: 100}).text("^Your health bar.");
 			Crafty.e('Words').attr({x: 300, y:80, w: 300, h: 100}).text("^Your current ability.");
-			Crafty.e('Words').attr({x: 38, y: 120, w: 400}).text("Use WASD or the arrow keys to jump/move. Press the DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
+			Crafty.e('Words').attr({x: 38, y: 120, w: 400}).text("Use WASD or arrow keys to jump/move. Press the DOWN arrow key while touching a door to enter it.").textColor('#CCCCCC');
 		});
 		
 		//Level 1
@@ -215,14 +231,15 @@
 			Crafty.background('url(http://i.imgur.com/h5Hy9tJ.png)');
 			//PLATFORMS
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50}).color('#5C3317');
-			Crafty.e('Solid').attr({x: 1000, y: 430, w: 280, h: 20}).color('#5C3317');
-			Crafty.e('Solid').attr({x: 200, y: 360, w: 300, h: 20}).color('#5C3317'); //must use double jump to get on
-			Crafty.e('Solid').attr({x: 600, y: 180, w: 400, h: 20}).color('#5C3317'); //must double jump to reach door
+			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20}).color('#5C3317');
+			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20}).color('#5C3317');
+			Crafty.e('Solid').attr({x: 600, y: 100, w: 400, h: 50}).color('#5C3317');
+			Crafty.e('Solid').attr({x: 600, y: 100, w: 400, h: 100}).color('#5C3317');
 			//BORDER
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600}).color('#5C3317');	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600}).color('#5C3317');	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:610, y: 100, locked:true, killsNeeded:1, level:'level3'});
+			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level3'});
 			spawnEnemy(770, 140);
 			spawnPlayer(200, 550);
 			//spawnFire(771,139);
@@ -347,6 +364,22 @@
 					}
 				}
 				//gemini???? unleash a demolisher
+				else if(player.slotSelect === 3){
+					player.sprite = 'http://i.imgur.com/bZW5l01.png';
+					player.image(player.sprite);
+					if(e.key === Crafty.keys.SPACE){
+						player.sprite = 'http://i.imgur.com/T2BQcfL.png';
+						player.image(player.sprite);
+						player.bind('KeyUp', function(){
+							player.sprite = 'http://i.imgur.com/bZW5l01.png';
+							player.image(player.sprite);
+						});
+					}
+				}
+				//ro
+				
+				
+				
 				//body shield makes player immune to all damage
 				else if(player.slotSelect === 4){
 					player.sprite = 'http://i.imgur.com/bZW5l01.png';
