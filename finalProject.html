@@ -69,11 +69,11 @@
 					
 					.bind('KeyDown', function(e){	
 						//keep track of which direction player is facing
-						if(e.key === Crafty.keys.RIGHT_ARROW){
+						if(e.key === Crafty.keys.RIGHT_ARROW || e.key === Crafty.keys.D){
 							this.dir = 1;
 							this.image(this.sprite).unflip('X');
 						}
-						else if(e.key === Crafty.keys.LEFT_ARROW){
+						else if(e.key === Crafty.keys.LEFT_ARROW || e.key === Crafty.keys.A){
 							this.dir = -1;
 							this.image(this.sprite).flip('X');
 						}
