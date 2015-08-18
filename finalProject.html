@@ -222,13 +222,12 @@
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50}).color('#5C3317');
 			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20}).color('#5C3317');
 			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20}).color('#5C3317');
-			Crafty.e('Solid').attr({x: 600, y: 100, w: 400, h: 50}).color('#5C3317');
-			Crafty.e('Solid').attr({x: 600, y: 100, w: 400, h: 100}).color('#5C3317');
+			Crafty.e('Solid').attr({x: 600, y: 150, w: 400, h: 50}).color('#5C3317'); //must double jump to reach door
 			//BORDER
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600}).color('#5C3317');	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600}).color('#5C3317');	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level3'});
+			Crafty.e('Door').attr({x:600, y: 70, locked:true, killsNeeded:1, level:'level3'});
 			spawnEnemy(770, 140);
 			spawnPlayer(200, 550);
 			//spawnFire(771,139);
@@ -253,7 +252,6 @@
 				//blackbar at bottom
 			Crafty.e('Solid')
 				.attr({x: 0, y: 1030, w: 6000, h: 20});
-
 		});
 		
 		/** INITIATIONS & PLAYER FUNCTIONS **/
@@ -403,7 +401,6 @@
 				//breathe underwater
 			});
 		}
-
 		/** ENEMY LOGIC **/
 		var spawnEnemy = function(xpos, ypos){
 			Crafty.e('Enemy').attr({x: xpos, y: ypos, w: 30, h:50}).color('#000');
@@ -412,4 +409,3 @@
     </script>
   </body>
 </html>
-
