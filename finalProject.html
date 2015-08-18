@@ -30,6 +30,20 @@
 			]);
 		
 
+		//template for the circle (for roar!!!!!!!!!) b/c Crafty.circle sux!!1111
+		Crafty.c('Circle', {
+			radius: 50,
+			init: function() {
+				this.requires('2D, Canvas, Collision, Color')
+				.attr({w: this.radius * 2, h: this.radius * 2})
+				var ctx = Crafty.canvas.context;
+				ctx.save();
+				ctx.beginPath();
+				ctx.arc(this.x + this.radius, this.y + this.radius,	this.radius, 0,	Math.PI * 2);
+			ctx.closePath();
+			ctx.fill();
+		}
+		});
 		
 		
 		//template for solids
@@ -396,11 +410,11 @@
 					}
 				}
 				//roar to briefly stun enemies
-								else if(player.slotSelect === 5){
+				else if(player.slotSelect === 5){
 					if (this.dir === 1){
 					if(e.key === Crafty.keys.SPACE){
 						Crafty.e('Circle')
-						.attr({x: this._x, y: this._y, radius: 100, visible : false})
+						.attr({x: this._x, y: this._y, visible : false})
 						.onHit('Enemy', function(e){
 							var WAS = e[0].obj.velocity;
 							e[0].obj.velocity = 0;
@@ -411,8 +425,10 @@
 								else {
 								e[0].obj.velocity = 2;
 								}
-								
 							}, 3000);
+							this.destroy();
+						})
+						.bind('KeyUp', function(){
 							this.destroy();
 						})
 						}
@@ -422,7 +438,7 @@
 					else if (this.dir === -1){
 						if(e.key === Crafty.keys.SPACE){
 						Crafty.e('Circle')
-						.attr({x: this._x - 100, y: this._y - 100, radius: 100, visible : false})
+						.attr({x: this._x - 100, y: this._y - 100, visible : false})
 						.onHit('Enemy', function(e){
 							var WAS = e[0].obj.velocity;
 							e[0].obj.velocity = 0;
@@ -437,6 +453,10 @@
 							}, 3000);
 							this.destroy();
 						})
+						.bind('KeyUp', function(){
+							this.destroy();
+						})
+						
 						}
 					
 					}
