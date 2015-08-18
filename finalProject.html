@@ -29,7 +29,6 @@
 			"1am.mp3"
 			]);
 		
-
 		//template for the circle (for roar!!!!!!!!!) b/c Crafty.circle sux!!1111
 		Crafty.c('Circle', {
 			radius: 50,
@@ -129,6 +128,34 @@
 					})
 			}
 		});
+		
+		
+		//TEMPLATE FOR MINION!!!
+			var kills = 0;
+				Crafty.c('twin', {
+					dir: 1, health:30, strength:40, velocity:5,	//type = attack & image type
+					init: function(){
+						this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
+							.gravity('Solid')
+							.onHit('Enemy', function(e){
+								e[0].obj.health -= this.strength;
+								this.destroy();
+							})
+							.onHit('Solid', function(){
+								this.velocity *= -1;
+							})
+							.bind('EnterFrame', function(){
+								this.x += this.velocity;
+								if(this.health <= 0){
+									kills += 1;
+									this.destroy();
+								}
+								if(this.hit('Solid')) {
+									this.destroy();	//destroy the bullet if it leaves the visible screen portion
+								}
+							})	
+					}
+				});
 		
 		//template for projectiles (both player & enemy)
 		Crafty.c('Projectile', {
@@ -377,20 +404,21 @@
 						});
 					}
 				}
-				//gemini???? unleash a demolisher
+					//gemini???? unleash a demolisher
 				else if(player.slotSelect === 3){
 					player.sprite = 'http://i.imgur.com/bZW5l01.png';
 					player.image(player.sprite);
-					if(e.key === Crafty.keys.SPACE){
-						player.sprite = 'http://i.imgur.com/T2BQcfL.png';
-						player.image(player.sprite);
-						player.bind('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/bZW5l01.png';
-							player.image(player.sprite);
-						});
-					}
-				}
-				//ro
+						if(e.key === Crafty.keys.SPACE){
+								Crafty.e('twin, Image')
+								.attr({x: this._x, y: this._y + 0.3 *playerh, w: 25, h: 4, xspeed: 15 *player.dir, strength: 40})
+								.image('http://i.imgur.com/bZW5l01.png');
+							}
+							player.bind('KeyPress', function(){
+								player.sprite = 'http://i.imgur.com/bZW5l01.png';
+								player.image(player.sprite);
+							});
+						}
+				
 				
 				
 				
