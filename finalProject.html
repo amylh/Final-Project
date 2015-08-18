@@ -10,39 +10,41 @@
 		display: block;
 		width: 800px;
 		}
-	<link href='http://fonts.googleapis.com/css?family=Sigmar+One|Pacifico' rel='stylesheet' type='text/css'>
 	</style>
   </head>
   <body>
-	<div align='center'><font style='font-size:60px; font-family:Pacifico'>She's Not Here</font></div>
+	<div align='center'><font style='font-size:60px; font-family:Verdana'>She's Not Here</font></div>
     <div id="game"></div>
 	<p align='center' style='font-size:15px; font-family:Verdana'>A game about conquering your inner demons and insecurities. Take on the role of a troubled teen and get out of the nightmare!</p>
-	<p align='center' style='font-size:15px; font-family:Verdana'>&#169; A.L., J.H., E.M., T.M., N.C.</p>
+	<p align='center' style='font-size:15px; font-family:Verdana'>Created by: A.L., J.H., E.M., T.M., and N.C. COPYRIGHTED LOL.</p>
     <script type="text/javascript" src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     
 	<script>
 		Crafty.init(800,600, document.getElementById('game'));	//initiate crafty & window
 		
 		/** CLASSES **/
-		//MUSIC
+		
+		
+		/** MUSIC **/
+		//start screen 
 			Crafty.audio.add("song", [
 			"1am.mp3"
 			]);
+			
+		//tutorial
+			Crafty.audio.add("ed", [
+				"ed2.mp3"
+				]);
 		
-		//template for the circle (for roar!!!!!!!!!) b/c Crafty.circle sux!!1111
-		Crafty.c('Circle', {
-			radius: 50,
-			init: function() {
-				this.requires('2D, Canvas, Collision, Color')
-				.attr({w: this.radius * 2, h: this.radius * 2})
-				var ctx = Crafty.canvas.context;
-				ctx.save();
-				ctx.beginPath();
-				ctx.arc(this.x + this.radius, this.y + this.radius,	this.radius, 0,	Math.PI * 2);
-			ctx.closePath();
-			ctx.fill();
-		}
-		});
+		//level1
+			Crafty.audio.add("ed2", [
+				"yup.mp3"
+				]);
+		
+
+		
+		
+		
 		
 		
 		//template for solids
@@ -131,39 +133,43 @@
 		
 		
 		//TEMPLATE FOR MINION!!!
-			var kills = 0;
-				Crafty.c('twin', {
-					dir: 1, health:30, strength:40, velocity:5,	//type = attack & image type
-					init: function(){
-						this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
-							.gravity('Solid')
-							.onHit('Enemy', function(e){
-								e[0].obj.health -= this.strength;
-								this.destroy();
-							})
-							.onHit('Solid', function(){
-								this.velocity *= -1;
-							})
-							.bind('EnterFrame', function(){
-								this.x += this.velocity;
-								if(this.health <= 0){
-									kills += 1;
-									this.destroy();
-								}
-								if(this.hit('Solid')) {
-									this.destroy();	//destroy the bullet if it leaves the visible screen portion
-								}
-							})	
-					}
-				});
+	var kills = 0;
+		Crafty.c('twin', {
+			dir: 1, health:30, strength:40, velocity:5,	//type = attack & image type
+			init: function(){
+				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
+					.gravity('Solid')
+					.onHit('Enemy', function(e){
+						e[0].obj.health -= this.strength;
+						this.destroy();
+						
+					})
+					.onHit('Solid', function(){
+						this.velocity *= -1;
+					})
+						
+					.bind('EnterFrame', function(){
+						this.x += this.velocity;
+						if(this.health <= 0){
+							kills += 1;
+							this.destroy();
+						}
+						if(this.hit('Solid')) 
+						{
+							this.destroy();	//destroy the bullet if it leaves the visible screen portion
+						}
+					})
+					
+			}
+		});
 		
 		//template for projectiles (both player & enemy)
 		Crafty.c('Projectile', {
 			strength:0, xspeed:0,
 			init: function(){
-				this.requires('2D, DOM, Color, Image, Collision')
+				this.requires('2D, DOM, Color, Collision')
 					.bind('EnterFrame', function(){
-						this.x += this.xspeed;	//move the bullet
+						 this.x += this.xspeed;	//move the bullet
 						if(this._x < this._x-Crafty.viewport.width || this._x > this._x+Crafty.viewport.width || this._y < this.y-Crafty.viewport.height || this._y > this.y+Crafty.viewport.height || this.hit('Solid')) {
 							this.destroy();	//destroy the bullet if it leaves the visible screen portion
 						}
@@ -185,10 +191,10 @@
 					//enables scene change
 					.bind('KeyDown', function(e){
 						if(kills >= this.killsNeeded){this.locked = false;}
-						if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === false){
+						if(e.key === Crafty.keys.DOWN_ARROW  && this.hit('PlayerC') && this.locked === false){
 							Crafty.enterScene(this.level);
 						}
-						else if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === true){
+						else if(e.key === Crafty.keys.DOWN_ARROW  && this.hit('PlayerC') && this.locked === true){
 							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
 						}
 					});
@@ -237,6 +243,7 @@
 		//tutorial screen
 		Crafty.defineScene('level0', function(){
 			Crafty.background('#2E2E2F');
+			Crafty.audio.play("ed", -1);
 			//platforms
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1160, h: 50}); //floor
 			Crafty.e('Solid').attr({x: 420, y: 440, w: 400, h: 160});
@@ -253,6 +260,8 @@
 		//Level 1
 		Crafty.defineScene('level1', function(){
 			Crafty.background('#2E2E2F');
+			Crafty.audio.remove("ed");
+			Crafty.audio.play("ed2", -1);
 			//PLATFORMS
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});
 			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20});
@@ -261,11 +270,14 @@
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level2'});
+			Crafty.e('Door')
+			.attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level2'});
 			Crafty.e('Words').attr({x:50, y:100, w:400}).text("To switch abilities, use the X and C keys. Then press the SPACEBAR to use it (unless stated otherwise in the description above it).").textColor('#CCCCCC');
 			Crafty.e('Words').attr({x:200, y:250, w:400}).text("Practice using the abilities and defeat the enemy in order to proceed.").textColor('#CCCCCC');
 			spawnEnemy(770, 140);
 			spawnPlayer(200, 550);
+			
+			
 		});
 		
 		//Level 2 Forest
@@ -288,7 +300,9 @@
 		
 		//Level 3
 		Crafty.defineScene('level3', function(){
-		Crafty.background('url(http://i.imgur.com/6j3PyHK.png)');	//http://i.imgur.com/FRAQq6V.jpg
+		Crafty.background('url(http://i.imgur.com/6j3PyHK.png)');	
+		Crafty.audio.remove("ed2");
+		//http://i.imgur.com/FRAQq6V.jpg
 			spawnPlayer(150, 200); 
 			spawnEnemy(300, 140);
 			//iceberg standing platform
@@ -404,7 +418,7 @@
 						});
 					}
 				}
-					//gemini???? unleash a demolisher
+				//gemini???? unleash a demolisher
 				else if(player.slotSelect === 3){
 					player.sprite = 'http://i.imgur.com/bZW5l01.png';
 					player.image(player.sprite);
@@ -420,7 +434,7 @@
 						}
 				
 				
-				
+
 				
 				//body shield makes player immune to all damage
 				else if(player.slotSelect === 4){
@@ -439,34 +453,9 @@
 				}
 				//roar to briefly stun enemies
 				else if(player.slotSelect === 5){
-					if (this.dir === 1){
 					if(e.key === Crafty.keys.SPACE){
 						Crafty.e('Circle')
-						.attr({x: this._x, y: this._y, visible : false})
-						.onHit('Enemy', function(e){
-							var WAS = e[0].obj.velocity;
-							e[0].obj.velocity = 0;
-							setTimeout(function(){
-								if(WAS < 0){
-								e[0].obj.velocity = -2;
-								}
-								else {
-								e[0].obj.velocity = 2;
-								}
-							}, 3000);
-							this.destroy();
-						})
-						.bind('KeyUp', function(){
-							this.destroy();
-						})
-						}
-					
-					}
-					
-					else if (this.dir === -1){
-						if(e.key === Crafty.keys.SPACE){
-						Crafty.e('Circle')
-						.attr({x: this._x - 100, y: this._y - 100, visible : false})
+						.attr({x: this._x, y: this._y, radius: 100, visible : false})
 						.onHit('Enemy', function(e){
 							var WAS = e[0].obj.velocity;
 							e[0].obj.velocity = 0;
@@ -481,14 +470,10 @@
 							}, 3000);
 							this.destroy();
 						})
-						.bind('KeyUp', function(){
-							this.destroy();
-						})
-						
 						}
 					
 					}
-				}
+				
 				//suck the life force out of enemies and heal yourself
 				else if(player.slotSelect === 6){
 					player.sprite = 'http://i.imgur.com/58f3YWP.png';
