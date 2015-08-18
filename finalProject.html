@@ -134,10 +134,10 @@
 					//enables scene change
 					.bind('KeyDown', function(e){
 						if(kills >= this.killsNeeded){this.locked = false;}
-						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === false){
+						if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === false){
 							Crafty.enterScene(this.level);
 						}
-						else if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === true){
+						else if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === true){
 							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
 						}
 					});
