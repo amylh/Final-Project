@@ -395,7 +395,8 @@
 					}
 				}
 				//roar to briefly stun enemies
-				else if(player.slotSelect === 5){
+								else if(player.slotSelect === 5){
+					if (this.dir === 1){
 					if(e.key === Crafty.keys.SPACE){
 						Crafty.e('Circle')
 						.attr({x: this._x, y: this._y, radius: 100, visible : false})
@@ -416,7 +417,29 @@
 						}
 					
 					}
-				
+					
+					else if (this.dir === -1){
+						if(e.key === Crafty.keys.SPACE){
+						Crafty.e('Circle')
+						.attr({x: this._x - 100, y: this._y - 100, radius: 100, visible : false})
+						.onHit('Enemy', function(e){
+							var WAS = e[0].obj.velocity;
+							e[0].obj.velocity = 0;
+							setTimeout(function(){
+								if(WAS < 0){
+								e[0].obj.velocity = -2;
+								}
+								else {
+								e[0].obj.velocity = 2;
+								}
+								
+							}, 3000);
+							this.destroy();
+						})
+						}
+					
+					}
+				}
 				//suck the life force out of enemies and heal yourself
 				else if(player.slotSelect === 6){
 					player.sprite = 'http://i.imgur.com/58f3YWP.png';
