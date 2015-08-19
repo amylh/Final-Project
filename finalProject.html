@@ -236,6 +236,7 @@
 			Crafty.e('Words').attr({x: 38, y: 200, w: 400}).text("Use WASD or arrow keys to jump/move. Use the DOWN arrow key to enter doors.").textColor('#CCCCCC');
 		});
 		
+		
 		//Level 1
 		Crafty.defineScene('level1', function(){
 			Crafty.background('#2E2E2F');
@@ -247,11 +248,67 @@
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600, visible:false});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level2'});
+			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'Transition1'});
 			Crafty.e('Words').attr({x:50, y:200, w:400}).text("Use the X and C keys to switch abilities, SPACEBAR to use the ability.").textColor('#CCCCCC');
 			Crafty.e('Words').attr({x:200, y:300, w:400}).text("Defeat the enemy in order to proceed.").textColor('#CCCCCC');
 			spawnEnemy(770, 140);
 			spawnPlayer(200, 550);
+		});
+				Crafty.defineScene('Transition1', function(){
+			Crafty.viewport._x = 0;
+			Crafty.viewport._y = 0;
+			Crafty.background('black');
+			Crafty.e('Words').attr({x: 50, y: 20, w: 600}).text("She looked into the mirror, reflecting all her grotesque curves.").textFont({size: '16px', color: "#FFFFFF"})
+			.bind("KeyDown", function(e){
+			if (e.key === Crafty.keys.SPACE)
+			{this.destroy();}
+				
+			
+			});
+			Crafty.e('Words').attr({x: 100, y: 50, w: 600}).text("She cringed at her curves.").textFont({size: '16px', color: "#FFFFFF"})
+			.bind("KeyDown", function(e){
+			if (e.key === Crafty.keys.SPACE)
+			{this.destroy();}
+				
+			
+			});
+			Crafty.e('Words').attr({x: 100, y: 80, w: 600}).text("She cringed at her flat stomach.").textFont({size: '16px', color: "#FFFFFF"})
+			.bind("KeyDown", function(e){
+			if (e.key === Crafty.keys.SPACE)
+			{this.destroy();}
+				
+			
+			});
+			Crafty.e('Words').attr({x: 100, y: 110, w: 600}).text("She cringed at her assymetric eyes.").textFont({size: '16px', color: "#FFFFFF"})
+			.bind("KeyDown", function(e){
+			if (e.key === Crafty.keys.SPACE)
+			{this.destroy();}
+				
+			
+			});
+			Crafty.e('Words').attr({x: 100, y: 140, w: 600}).text("She cringed at her big nose.").textFont({size: '16px', color: "#FFFFFF"})
+				.bind("KeyDown", function(e){
+				if (e.key === Crafty.keys.SPACE){
+					Crafty.e('Words').attr({x: 50, y: 50, w: 600}).text("She cringed.").textFont({size: '16px', color: "#FFFFFF"})
+					.bind("KeyDown", function(e){
+					if (e.key === Crafty.keys.SPACE){
+						Crafty.e('Words').attr({x: 150, y: 100, w: 600}).text("She cringed.").textFont({size: '16px', color: "#FFFFFF"})
+						.bind("KeyDown", function(e){
+							Crafty.e('Words').attr({x: 250, y: 150, w: 600}).text("She cringed.").textFont({size: '16px', color: "#FFFFFF"})
+								.bind("KeyDown", function(e){
+									if(e.key === Crafty.keys.SPACE){
+									Crafty.enterScene('level2');
+								}
+								});
+						
+						});
+						
+					}
+					});
+					this.destroy();
+				}
+				});
+				
 		});
 		
 		//Level 2 Forest
