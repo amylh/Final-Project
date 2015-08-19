@@ -11,12 +11,13 @@
 		width: 800px;
 		}
 	</style>
+	 <link href='http://fonts.googleapis.com/css?family=Sigmar+One|Pacifico' rel='stylesheet' type='text/css'>
   </head>
   <body>
-	<div align='center'><font style='font-size:60px; font-family:Verdana'>She's Not Here</font></div>
+	<div align='center'><font style='font-size:70px; font-family:Pacifico'>She's Not Here</font></div>
     <div id="game"></div>
 	<p align='center' style='font-size:15px; font-family:Verdana'>A game about conquering your inner demons and insecurities. Take on the role of a troubled teen and get out of the nightmare!</p>
-	<p align='center' style='font-size:15px; font-family:Verdana'>Created by: A.L., J.H., E.M., T.M., and N.C. COPYRIGHTED LOL.</p>
+	<p align='center' style='font-size:15px; font-family:Verdana'>&#169; A.L., J.H., E.M., T.M., N.C.</p>
     <script type="text/javascript" src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     
 	<script>
@@ -27,10 +28,9 @@
 				e.preventDefault();
 			}
 		}, false);
-		//initiate crafty & window
-		Crafty.init(800,600, document.getElementById('game'));
-		
-		/** MUSIC 
+	Crafty.init(800,600, document.getElementById('game'));	//initiate crafty & window
+
+/** MUSIC 
 			Crafty.audio.add("song", ["1am.mp3"]);	//start screen
 			Crafty.audio.add("ed", ["ed2.mp3"]);	//tutorial
 			Crafty.audio.add("ed2", ["yup.mp3"]);	//level1
@@ -168,10 +168,10 @@
 					//enables scene change
 					.bind('KeyDown', function(e){
 						if(kills >= this.killsNeeded){this.locked = false;}
-						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === false){
+						if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S  && this.hit('PlayerC') && this.locked === false){
 							Crafty.enterScene(this.level);
 						}
-						else if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === true){
+						else if(e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === true){
 							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
 						}
 					});
@@ -490,12 +490,17 @@
 					}
 				}
 				//double jump
-				else if(player.slotSelect === 10){
-					player.image('http://i.imgur.com/fCOhRqf.png');
-					player.y -= 3;
+				else if(player.slotSelect === 10){	
 					if (!this._falling && e.key === Crafty.keys.UP_ARROW) {
-						this._canJumpAgain = true;} 
+						this._canJumpAgain = true;}
+					else if (!this._falling && e.key === Crafty.keys.W) {
+						this._canJumpAgain = true;}
 					else if (this._canJumpAgain && e.key === Crafty.keys.UP_ARROW) {
+						this._up = true;
+						this._gy = 0;
+						this._canJumpAgain = false;
+					}
+					else if (this._canJumpAgain && e.key === Crafty.keys.W) {
 						this._up = true;
 						this._gy = 0;
 						this._canJumpAgain = false;
@@ -518,7 +523,6 @@
 				}
 			});
 		}
-		
     </script>
   </body>
 </html>
