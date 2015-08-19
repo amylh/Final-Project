@@ -14,10 +14,10 @@
 	<link href='http://fonts.googleapis.com/css?family=Sigmar+One|Pacifico' rel='stylesheet' type='text/css'>
   </head>
   <body>
-	<div align='center'><font style='font-size:70px; font-family:Pacifico'>She's Not Here</font></div>
+	<div align='center'><font style='font-size:60px; font-family:Pacifico'>She's Not Here</font></div>
     <div id="game"></div>
 	<p align='center' style='font-size:15px; font-family:Verdana'>A game about conquering your inner demons and insecurities. Take on the role of a troubled teen and get out of the nightmare!</p>
-	<p align='center' style='font-size:15px; font-family:Verdana'>&#169; A.L., J.H., E.M., T.M., N.C.</p>
+	<p align='center' style='font-size:15px; font-family:Verdana'>Created by: A.L., J.H., E.M., T.M., and N.C. COPYRIGHTED LOL.</p>
     <script type="text/javascript" src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     
 	<script>
@@ -37,21 +37,6 @@
 			Crafty.audio.add("ed2", ["yup.mp3"]);	//level1
 		**/
 		
-		//template for Roar circle class
-		/**Crafty.c('Circle', {
-+			radius: 50,
-+			init: function() {
-+				this.requires('2D, Canvas, Collision, Color')
-+				.attr({w: this.radius * 2, h: this.radius * 2})
-+				var ctx = Crafty.canvas.context;
-+				ctx.save();
-+				ctx.beginPath();
-+				ctx.arc(this.x + this.radius, this.y + this.radius,	this.radius, 0,	Math.PI * 2);
-+			ctx.closePath();
-+			ctx.fill();
-+		}
-+		});**/
-		
 		/** CLASSES **/
 		//template for solids
 		Crafty.c('Solid', {
@@ -68,20 +53,22 @@
 				this.requires('2D, Canvas, Grid, Color, Collision, Gravity')
 					.color('#008B8B', 0.5)	//#248F8F
 					.onHit('PlayerC', function(e){
-						if(e[0].obj.slotSelect != 12 && e[0].obj.y > this.y-0.5*playerh){e[0].obj.gravityConst(-0.05);}
-						else{e[0].obj.gravityConst(0.05);}
+						if(e[0].obj.slotSelect != 12 && e[0].obj.y > this.y+20){
+							e[0].obj.health -= 0.01;
+							e[0].obj.takeDamage();
+						}
 					});
 			}
 		})
 		
 		//template for Player-controlled sprite
 		Crafty.c('PlayerC', {
-			dir:1, health:30, maxHealth:30, shield:0, slotSelect:1,
+			dir:1, health:30, maxHealth:30, shield:0, slotSelect:1, sprite:'http://i.imgur.com/lSex1EM.png',
 			init: function() {
 				this.requires('2D, Canvas, Twoway, Gravity, Image, Collision')
 					.twoway(4,7)	//built-in movement/jumping function
 					.attr({w: playerw, h: playerh})
-					.image('http://i.imgur.com/lSex1EM.png')
+					.image(this.sprite)
 					.gravity('Solid')
 					.bind('Moved', function(p) {	//executes the function when the 'Moved' event occurs
 						if (this.hit('Solid')){
@@ -110,49 +97,76 @@
 								this.slotSelect = 12;}
 						}
 					});
+			},
+			takeDamage: function(){
+				var t = 0;
+				this.bind('EnterFrame', function damage(){
+					if(t<15){this.image('http://i.imgur.com/BHrK1C1.png');}
+					else if(t>15){
+						this.image(this.sprite);
+						this.unbind(damage);
+					}
+					t += 1;
+				})
 			}
 		});
 		
 		//template for enemies
 		var kills = 0;
 		Crafty.c('Enemy', {
-			health:30, type:1, attackStrength:0.5, velocity:4,
+			health:30, type:1, attackStrength:0.5, velocity:4, sprite:'http://i.imgur.com/U6IzklM.png',
 			init: function(){
 				this.requires('2D, Canvas, Twoway, Gravity, Image, Collision')
 					.gravity('Solid')
-					.image('http://i.imgur.com/U6IzklM.png')
+					.image(this.sprite)
 					.onHit('PlayerC', function(e){
-						e[0].obj.health -= this.attackStrength - this.attackStrength*e[0].obj.shield;
+						if(e[0].obj.shield === 0){e[0].obj.takeDamage();}
+						e[0].obj.health -= (this.attackStrength - this.attackStrength*e[0].obj.shield);
+						e[0].obj.takeDamage();
 					})
 					.onHit('Solid', function(){
 						this.velocity *= -1;
-						if(Crafty.math.abs(this.velocity) != this.velocity){this.flip('X');}
+						if(Crafty.math.abs(this.velocity) != this.velocity){this.flip('X');}	//if velocity is negative, flip it
 						else{this.unflip('X');}
 					})
 					.bind('EnterFrame', function(){
 						this.x += this.velocity;
+						if(Crafty.math.abs(this.velocity) != this.velocity){this.flip('X');}	//if velocity is negative, flip it
+						else{this.unflip('X');}
 						if(this.health <= 0){
 							if(this.type > 0){kills += 1;}
 							this.destroy();
 						}
 					});
+			},
+			takeDamage: function(){
+				var t = 0;
+				this.bind('EnterFrame', function damage(){
+					if(t<15){this.image('http://i.imgur.com/CE7O9pX.png');}
+					else if(t>15){
+						this.image(this.sprite);
+						this.unbind(damage);}
+					t += 1;
+				})
 			}
 		});
 		
 		//template for projectiles (both player & enemy)
 		Crafty.c('Projectile', {
-			strength:0, xspeed:0, sprite:'http://i.imgur.com/rJPITsy.png',
+			strength:0, xspeed:0,
 			init: function(){
 				this.requires('2D, DOM, Image, Collision')
+					.image('http://i.imgur.com/rJPITsy.png')
 					.bind('EnterFrame', function(){
 						this.x += this.xspeed;	//move the bullet
-						if(Crafty.math.abs(this.xspeed) != this.xspeed){this.image(this.sprite).flip('X');}
-						else{this.image(this.sprite).unflip('X');}
+						if(Crafty.math.abs(this.xspeed) != this.xspeed){this.flip('X');}
+						else{this.unflip('X');}
 						if(this._x < this._x-Crafty.viewport.width || this._x > this._x+Crafty.viewport.width || this._y < this.y-Crafty.viewport.height || this._y > this.y+Crafty.viewport.height || this.hit('Solid')) {
 							this.destroy();	//destroy the bullet if it leaves the visible screen portion
 						}
 					})
 					.onHit('Enemy', function(e){
+						e[0].obj.takeDamage();
 						e[0].obj.health -= this.strength;
 						this.destroy();
 					});
@@ -161,24 +175,17 @@
 		
 		//template for all doors
 		Crafty.c('Door', {
-			level:'level0', locked:false, killsNeeded:0,
+			level:'level0', killsNeeded:0,
 			init: function(){
 				this.requires('2D, Canvas, Grid, Color, Collision')
 					.attr({w: 50, h: 80})
 					.color('#BBBBBB')
 					//enables scene change
 					.bind('KeyDown', function(e){
-						if(kills >= this.killsNeeded){this.locked = false;}
-						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === false){
+						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && kills >= this.killsNeeded){
 							Crafty.enterScene(this.level);
 						}
-						else if(e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === false){
-							Crafty.enterScene(this.level);
-						}
-						else if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === true){
-							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
-						}
-						else if(e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === true){
+						else if((e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S) && this.hit('PlayerC') && kills < this.killsNeeded){
 							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
 						}
 					});
@@ -195,12 +202,40 @@
 			}
 		});
 		
+		//template for Roar circle class
+		/**Crafty.c('Circle', {
++			radius: 50,
++			init: function() {
++				this.requires('2D, Canvas, Collision, Color')
++				.attr({w: this.radius * 2, h: this.radius * 2})
++				var ctx = Crafty.canvas.context;
++				ctx.save();
++				ctx.beginPath();
++				ctx.arc(this.x + this.radius, this.y + this.radius,	this.radius, 0,	Math.PI * 2);
++			ctx.closePath();
++			ctx.fill();
++		}
++		});**/
+		
 		/** STUFF **/
 		var spawnEnemy = function(xpos, ypos){
 			Crafty.e('Enemy').attr({x: xpos, y: ypos, w: 30, h:50});
 		}
 		
 		/** LEVEL SCREENS **/
+		var currentLevel = 'level0';
+		//game over screen
+		Crafty.defineScene('Over', function(){
+			Crafty.background('url(http://i.imgur.com/HdmmNJV.png)');	//http://i.imgur.com/c2A937j.png
+			Crafty.e('Words').attr({x: 100, y:100, w:800, h:100}).text('You fell into eternal rest...').textFont({size:'40px'});
+			Crafty.e('Words').attr({x: 200, y:200, w:250, h:200}).text('Press the spacebar to restart.')
+				.bind('KeyDown', function(e){
+					if(e.key === Crafty.keys.SPACE){
+						Crafty.enterScene(currentLevel);
+					}
+				}); 
+		});
+		
 		//start screen
 		Crafty.defineScene('Start', function(){
 			Crafty.background('url(http://i.imgur.com/HdmmNJV.png)');
@@ -208,22 +243,13 @@
 			Crafty.e('Words').attr({x:270, y:300, w: 300, h: 100}).text("Press any key to begin playing").textFont({size:'15px'})
 				.bind('KeyDown', function(e){
 					Crafty.enterScene('level0');
-					spawnPlayer(200,550);
-				}); 
-		});
-		
-		//game over screen
-		Crafty.defineScene('Over', function(){
-			Crafty.background('url(http://i.imgur.com/c2A937j.png)');
-			Crafty.e('Words').attr({x: 100, y:100, w:800, h:100}).text('You fell into eternal rest...').textFont({size:'40px'});
-			Crafty.e('Words').attr({x: 200, y:200, w:250, h:200}).text('Press any key to restart.')
-				.bind('KeyDown', function(e){
-					Crafty.enterScene('level1');
+					spawnPlayer(100,550);
 				}); 
 		});
 		
 		//tutorial screen
 		Crafty.defineScene('level0', function(){
+			currentLevel = 'level0';
 			Crafty.background('url(http://i.imgur.com/zp9XKZ2.png)');
 			//platforms
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 800, h: 50}); //floor
@@ -236,83 +262,28 @@
 			Crafty.e('Words').attr({x: 38, y: 200, w: 400}).text("Use WASD or arrow keys to jump/move. Use the DOWN arrow key to enter doors.").textColor('#CCCCCC');
 		});
 		
-		
 		//Level 1
 		Crafty.defineScene('level1', function(){
+			currentLevel = 'level1';
 			Crafty.background('#2E2E2F');
 			//PLATFORMS
-			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});
-			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20});
-			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20});
+			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});		//floor
+			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 120});
+			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 120});
 			//BORDER
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600, visible:false});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'Transition1'});
+			Crafty.e('Door').attr({x:1550, y: 250, killsNeeded:1, level:'level2'});
 			Crafty.e('Words').attr({x:50, y:200, w:400}).text("Use the X and C keys to switch abilities, SPACEBAR to use the ability.").textColor('#CCCCCC');
 			Crafty.e('Words').attr({x:200, y:300, w:400}).text("Defeat the enemy in order to proceed.").textColor('#CCCCCC');
 			spawnEnemy(770, 140);
-			spawnPlayer(200, 550);
-		});
-				Crafty.defineScene('Transition1', function(){
-			Crafty.viewport._x = 0;
-			Crafty.viewport._y = 0;
-			Crafty.background('black');
-			Crafty.e('Words').attr({x: 50, y: 20, w: 600}).text("She looked into the mirror, reflecting all her grotesque curves.").textFont({size: '16px', color: "#FFFFFF"})
-			.bind("KeyDown", function(e){
-			if (e.key === Crafty.keys.SPACE)
-			{this.destroy();}
-				
-			
-			});
-			Crafty.e('Words').attr({x: 100, y: 50, w: 600}).text("She cringed at her curves.").textFont({size: '16px', color: "#FFFFFF"})
-			.bind("KeyDown", function(e){
-			if (e.key === Crafty.keys.SPACE)
-			{this.destroy();}
-				
-			
-			});
-			Crafty.e('Words').attr({x: 100, y: 80, w: 600}).text("She cringed at her flat stomach.").textFont({size: '16px', color: "#FFFFFF"})
-			.bind("KeyDown", function(e){
-			if (e.key === Crafty.keys.SPACE)
-			{this.destroy();}
-				
-			
-			});
-			Crafty.e('Words').attr({x: 100, y: 110, w: 600}).text("She cringed at her assymetric eyes.").textFont({size: '16px', color: "#FFFFFF"})
-			.bind("KeyDown", function(e){
-			if (e.key === Crafty.keys.SPACE)
-			{this.destroy();}
-				
-			
-			});
-			Crafty.e('Words').attr({x: 100, y: 140, w: 600}).text("She cringed at her big nose.").textFont({size: '16px', color: "#FFFFFF"})
-				.bind("KeyDown", function(e){
-				if (e.key === Crafty.keys.SPACE){
-					Crafty.e('Words').attr({x: 50, y: 50, w: 600}).text("She cringed.").textFont({size: '16px', color: "#FFFFFF"})
-					.bind("KeyDown", function(e){
-					if (e.key === Crafty.keys.SPACE){
-						Crafty.e('Words').attr({x: 150, y: 100, w: 600}).text("She cringed.").textFont({size: '16px', color: "#FFFFFF"})
-						.bind("KeyDown", function(e){
-							Crafty.e('Words').attr({x: 250, y: 150, w: 600}).text("She cringed.").textFont({size: '16px', color: "#FFFFFF"})
-								.bind("KeyDown", function(e){
-									if(e.key === Crafty.keys.SPACE){
-									Crafty.enterScene('level2');
-								}
-								});
-						
-						});
-						
-					}
-					});
-					this.destroy();
-				}
-				});
-				
+			spawnPlayer(50, 550);
 		});
 		
 		//Level 2 Forest
 		Crafty.defineScene('level2', function(){
+			currentLevel = 'level2';
 			Crafty.background('url(http://i.imgur.com/h5Hy9tJ.png)');
 			//PLATFORMS
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50}).color('#5C3317');
@@ -323,24 +294,22 @@
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600}).color('#5C3317');	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600}).color('#5C3317');	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:610, y: 100, locked:true, killsNeeded:1, level:'level3'});
+			Crafty.e('Door').attr({x:610, y: 100, killsNeeded:1, level:'level3'});
 			spawnEnemy(770, 140);
 			spawnPlayer(200, 550);
-			//spawnFire(771,139);
 		});
 		
 		//Level 3
 		Crafty.defineScene('level3', function(){
-		Crafty.background('url(http://i.imgur.com/6j3PyHK.png)');	//http://i.imgur.com/FRAQq6V.jpg
-		//Crafty.audio.remove("ed2");
-			spawnPlayer(150, 200); 
+			currentLevel = 'level3';
+			Crafty.background('url(http://i.imgur.com/6j3PyHK.png)');	//http://i.imgur.com/FRAQq6V.jpg
+			//Crafty.audio.remove("ed2");
 			spawnEnemy(300, 140);
+			spawnPlayer(150, 200); 
 			//iceberg standing platform
 			Crafty.e('2D, Canvas, Solid, Color, Collision')
-				.attr({x:225, y: 350, w: 200, h: 250})
+				.attr({x:125, y: 350, w: 200, h: 250})
 				.color('white');
-			Crafty.e('Door').attr({x:105, y: 427, w: 50, h: 80});
-			Crafty.e('Solid').attr({x: 95, y: 508, w: 100, h: 15});
 			//water
 			Crafty.e('Water').attr({x:0, y: 200, w: 800, h: 400});
 			//floor & border
@@ -361,8 +330,8 @@
 						"Capricorn's Ability: Double Jumping; just press UP key twice", "Aquarius' Ability: Water Blast; can also put out fires", 
 						"Pisces' Ability: Breathe underwater"];
 		var spawnPlayer = function(xpos, ypos){
-			var state = 0;	//keep track of whether the game has just started or not
-			kills = 0;	//reset amount of kills so doors can be locked
+			var state = 0;	//keep track of whether the game has just restarted or not
+			kills = 0;		//reset amount of kills so doors can be locked
 			player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh});
 			Crafty.viewport.follow(player,0,0);			//camera to follow player
 			//update health & ability slot bars so they're visible at all times
@@ -410,198 +379,219 @@
 			player.uniqueBind('KeyDown', function(e) {
 				//sword
 				if(player.slotSelect === 1){
-					player.image('http://i.imgur.com/lSex1EM.png');
+					player.sprite = 'http://i.imgur.com/lSex1EM.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
-						player.image('http://i.imgur.com/QWYfemj.png');
+						player.sprite = 'http://i.imgur.com/QWYfemj.png';
+						player.image(player.sprite);
 						player.onHit('Enemy', function(e){
 							if((player.dir === 1 && e[0].obj.x > player.x+playerw && e[0].obj.x < player.x + player.w) || (player.dir === -1 && e[0].obj.x > player.x-38 && e[0].obj.x < player.x)){
+								e[0].obj.takeDamage();
 								e[0].obj.health-=10;
+								player.health += 0.5;
 							}
 						});
 						player.one('KeyUp', function(){
-							player.image('http://i.imgur.com/lSex1EM.png');
+							player.sprite = 'http://i.imgur.com/lSex1EM.png';
+							player.image(player.sprite);
 						});
 					}
 				}
 				//super strength to KO enemies and smash through certain walls
 				else if(player.slotSelect === 2){
-					player.image('http://i.imgur.com/zX3t9YY.png');
+					player.sprite = 'http://i.imgur.com/zX3t9YY.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
-						player.image('http://i.imgur.com/n9oLKTt.png');
+						player.sprite = 'http://i.imgur.com/n9oLKTt.png';
+						player.image(player.sprite);
 						player.onHit('Enemy', function(e){
 							var hit = false;
 							if((player.dir === 1 && e[0].obj.x > player.x+playerw && e[0].obj.x < player.x + player.w) || (player.dir === -1 && e[0].obj.x > player.x-38 && e[0].obj.x < player.x)){
 								if(hit === false){
+									e[0].obj.takeDamage();
 									e[0].obj.health-=30;
 									hit = true;
 								}
 							}
 						});
-						setTimeout(function(){player.image('http://i.imgur.com/zX3t9YY.png');}, 1000);
+						setTimeout(function(){
+							player.sprite = 'http://i.imgur.com/zX3t9YY.png';
+							player.image(player.sprite);
+							}, 1000);
 					}
 				}
 				//unleash an inner minion
 				else if(player.slotSelect === 3){
-					player.image('http://i.imgur.com/3twc0Qe.png');
+					player.sprite = 'http://i.imgur.com/3twc0Qe.png';
+					player.image(this.sprite);
 					if(e.key === Crafty.keys.SPACE){
-						if (player.dir === 1){
 						Crafty.e('Enemy').attr({x: this._x, y: this._y, w: playerw, h: playerh, velocity: 2*player.dir, attackStrength:0, health:5, type:0})
 							.image('http://i.imgur.com/WUQrodK.png')
 							.bind('EnterFrame', function(){this.health -= 0.02;})	//because the default FPS is 50
 							.onHit('Enemy', function(e){
 								if(e[0].obj.type > 0){
+									e[0].obj.takeDamage();
 									e[0].obj.health -= 6;
 									this.health = 0;
 								}
 							});
-						}
-						else if (player.dir === -1){
-						Crafty.e('Enemy').attr({x: this._x, y: this._y, w: playerw, h: playerh, velocity: -2*-player.dir, attackStrength:0, health:5, type:0})
-							.image('http://i.imgur.com/WUQrodK.png').flip('X')
-							.bind('EnterFrame', function(){this.health -= 0.02;})	//because the default FPS is 50
-							.onHit('Enemy', function(e){
-								if(e[0].obj.type > 0){
-									e[0].obj.health -= 6;
-									this.health = 0;
-								}
-							});
-						}
 					}
 				}
 				//body shield makes player immune to all damage
 				else if(player.slotSelect === 4){
-					player.image('http://i.imgur.com/bZW5l01.png');
+					player.sprite = 'http://i.imgur.com/bZW5l01.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
 						player.shield = 1;
-						player.image('http://i.imgur.com/T2BQcfL.png');
+						player.sprite = 'http://i.imgur.com/T2BQcfL.png';
+						player.image(player.sprite);
 						player.y -= 2;
 						player.one('KeyUp', function(){
 							player.shield = 0;
-							player.image('http://i.imgur.com/bZW5l01.png');
+							player.sprite = 'http://i.imgur.com/bZW5l01.png';
+							player.image(player.sprite);
 						});
 					}
 				}
 				//roar to briefly stun enemies
 				else if(player.slotSelect === 5){
-					player.image('http://i.imgur.com/DlROvFf.png');
+					player.sprite = 'http://i.imgur.com/DlROvFf.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
-						player.image('http://i.imgur.com/jPDBlap.png');
+						player.sprite = 'http://i.imgur.com/jPDBlap.png';
+						player.image(player.sprite);
 						player.y -= 2;
 						player.one('KeyUp', function(){
-							player.image('http://i.imgur.com/DlROvFf.png');
+							player.sprite = 'http://i.imgur.com/DlROvFf.png';
+							player.image(player.sprite);
 						});
-						/**Crafty.e('Circle')
-						.attr({x: this._x, y: this._y, radius: 100, visible : false})
-						.onHit('Enemy', function(e){
-							var WAS = e[0].obj.velocity;
-							e[0].obj.velocity = 0;
-							setTimeout(function(){
-								if(WAS < 0){
-								e[0].obj.velocity = -2;
-								}
-								else {
-								e[0].obj.velocity = 2;
-								}
-								
-							}, 3000);
-							this.destroy();
-						})
+						/**Crafty.e('Circle').attr({x: this._x, y: this._y, radius: 100, visible: false})
+							.onHit('Enemy', function(e){
+								var WAS = e[0].obj.velocity;
+								e[0].obj.velocity = 0;
+								setTimeout(function(){
+									if(WAS < 0){
+									e[0].obj.velocity = -2;
+									}
+									else {
+									e[0].obj.velocity = 2;
+									}
+								}, 3000);
+								this.destroy();
+							})
 						}**/
 					}
 				}
 				//suck the life force out of enemies and heal yourself
 				else if(player.slotSelect === 6){
-					player.image('http://i.imgur.com/58f3YWP.png');
+					player.sprite = 'http://i.imgur.com/58f3YWP.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
 						player.shield = 1;
-						player.image('http://i.imgur.com/hoVowYe.png');
+						player.sprite = 'http://i.imgur.com/hoVowYe.png';
+						player.image(player.sprite);
 						player.y -= 2;
 						player.onHit('Enemy', function(e){
 							player.health += 0.1;
 							updateHealth();
+							e[0].obj.takeDamage();
 							e[0].obj.health -= 0.1;
 						});
 						player.one('KeyUp', function(){
 							player.shield = 0;
-							player.image('http://i.imgur.com/58f3YWP.png');
+							player.sprite = 'http://i.imgur.com/58f3YWP.png';
+							player.image(player.sprite);
 						});
 					}
 				}
 				//healing
 				else if(player.slotSelect === 7){
-					player.image('http://i.imgur.com/A04X0bC.png');
+					player.sprite = 'http://i.imgur.com/A04X0bC.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
 						player.health += 10;
 						updateHealth();
-						player.image('http://i.imgur.com/AfcrQ7n.png');
+						player.sprite = 'http://i.imgur.com/AfcrQ7n.png';
+						player.image(player.sprite);
 						player.y -= 2;
 						player.one('KeyUp', function(){
-							player.image('http://i.imgur.com/A04X0bC.png');
+							player.sprite = 'http://i.imgur.com/A04X0bC.png';
+							player.image(player.sprite);
 						});
 					}
 				}
 				//poison darts that slowly decrease an enemy's health until it dies, once hit
 				else if(player.slotSelect === 8){
-					player.image('http://i.imgur.com/cBHxYQl.png');
+					player.sprite = 'http://i.imgur.com/cBHxYQl.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
-						player.image('http://i.imgur.com/zL75Q38.png');
-						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 15, h: 10, xspeed: 7*player.dir, strength: 5, sprite:'http://i.imgur.com/EJAIT1H.png'})
+						player.sprite = 'http://i.imgur.com/zL75Q38.png';
+						player.image(player.sprite);
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 15, h: 10, xspeed: 7*player.dir, strength: 5}).image('http://i.imgur.com/EJAIT1H.png')
 							.onHit('Enemy', function(e){
 								var timer = setInterval(function(){
+									e[0].obj.takeDamage();
 									e[0].obj.health -= 5;
 									if(e[0].obj.health <= 0){clearInterval(timer);}
 								}, 1000);
 							});
 						player.one('KeyUp', function(){
-							player.image('http://i.imgur.com/cBHxYQl.png');
+							player.sprite = 'http://i.imgur.com/cBHxYQl.png';
+							player.image(player.sprite);
 						});
 					}
 				}
 				//arrows that do the most damage out of all the projectiles
 				else if(player.slotSelect === 9){
-					player.image('http://i.imgur.com/1BkL56F.png');
+					player.sprite = 'http://i.imgur.com/1BkL56F.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
-						player.image('http://i.imgur.com/xFYXJ2L.png');
-						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.4*playerh, w: 25, h: 5, xspeed: 10*player.dir, strength: 10, sprite:'http://i.imgur.com/rJPITsy.png'});
+						player.sprite = 'http://i.imgur.com/xFYXJ2L.png';
+						player.image(player.sprite);
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.4*playerh, w: 25, h: 5, xspeed: 10*player.dir, strength: 10}).image('http://i.imgur.com/rJPITsy.png');
 						player.one('KeyUp', function(){
-							player.image('http://i.imgur.com/1BkL56F.png');
+							player.sprite = 'http://i.imgur.com/1BkL56F.png';
+							player.image(player.sprite);
 						});
 					}
 				}
 				//double jump
 				else if(player.slotSelect === 10){
-					player.image('http://i.imgur.com/fCOhRqf.png');
+					player.sprite = 'http://i.imgur.com/fCOhRqf.png';
+					player.image(player.sprite);
 					player.y -= 3;
 					if (!this._falling && e.key === Crafty.keys.UP_ARROW) {
 						this._canJumpAgain = true;} 
-					else if (!this._falling && e.key === Crafty.keys.W) {
-						this._canJumpAgain = true;}
 					else if (this._canJumpAgain && e.key === Crafty.keys.UP_ARROW) {
 						this._up = true;
 						this._gy = 0;
 						this._canJumpAgain = false;
 					}
-					else if (this._canJumpAgain && e.key === Crafty.keys.W) {
-						this._up = true;
-						this._gy = 0;
-						this._canJumpAgain = false;
-					}
 				}
-				
 				//water blast can also put out fires and push back enemies
 				else if(player.slotSelect === 11){
-					player.image('http://i.imgur.com/KlijvuQ.png');
+					player.sprite = 'http://i.imgur.com/KlijvuQ.png';
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
-						player.image('http://i.imgur.com/dAWHVjM.png');
-						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 25, xspeed: 8*player.dir, strength: 4, sprite:'http://i.imgur.com/xRc8cEG.png'});
+						player.sprite = 'http://i.imgur.com/dAWHVjM.png';
+						player.image(player.sprite);
+						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 25, xspeed: 8*player.dir, strength: 4}).image('http://i.imgur.com/xRc8cEG.png');
 						player.one('KeyUp', function(){
-							player.image('http://i.imgur.com/KlijvuQ.png');
+							player.sprite = 'http://i.imgur.com/KlijvuQ.png';
+							player.image(player.sprite);
 						});
 					}
 				}
 				//breathe underwater
 				else if(player.slotSelect === 12){
-					player.image('http://i.imgur.com/I1ia1vk.png');
+					player.sprite = 'http://i.imgur.com/I1ia1vk.png';
+					player.image(player.sprite);
+					if(e.key === Crafty.keys.SPACE && player.hit('Water')){
+						player.gravityConst(-0.05);
+					}
+					else if(e.key === Crafty.keys.SPACE && !player.hit('Water')){
+						player.gravityConst(0.2);
+					}
 				}
 			});
 		}
@@ -609,4 +599,3 @@
     </script>
   </body>
 </html>
-
