@@ -173,26 +173,19 @@
 			}
 		});
 		
-	//template for all doors
+		//template for all doors
 		Crafty.c('Door', {
-			level:'level0', locked:false, killsNeeded:0,
+			level:'level0', killsNeeded:0,
 			init: function(){
 				this.requires('2D, Canvas, Grid, Color, Collision')
 					.attr({w: 50, h: 80})
 					.color('#BBBBBB')
 					//enables scene change
 					.bind('KeyDown', function(e){
-						if(kills >= this.killsNeeded){this.locked = false;}
-						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === false){
+						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && kills >= this.killsNeeded){
 							Crafty.enterScene(this.level);
 						}
-						else if(e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === false){
-							Crafty.enterScene(this.level);
-						}
-						else if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === true){
-							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
-						}
-						else if(e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === true){
+						else if((e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S) && this.hit('PlayerC') && kills < this.killsNeeded){
 							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
 						}
 					});
@@ -272,7 +265,7 @@
 		//Level 1
 		Crafty.defineScene('level1', function(){
 			currentLevel = 'level1';
-			Crafty.background('#2E2E2F');
+			Crafty.background('url(http://i.imgur.com/MniAOlD.png)');
 			//PLATFORMS
 			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});		//floor
 			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 120});
@@ -287,6 +280,8 @@
 			spawnEnemy(770, 140);
 			spawnPlayer(50, 550);
 		});
+		
+		//level 2 - the insults background
 		
 		//Level 2 Forest
 		Crafty.defineScene('level2', function(){
@@ -306,7 +301,7 @@
 			spawnPlayer(200, 550);
 		});
 		
-		//Level 3
+		//Level 3 Forest Again
 		Crafty.defineScene('level3', function(){
 			currentLevel = 'level3';
 			Crafty.background('url(http://i.imgur.com/6j3PyHK.png)');	//http://i.imgur.com/FRAQq6V.jpg
@@ -324,6 +319,12 @@
 			Crafty.e('Solid').attr({x: 800, y: 0, w: 30, h: 600});	//E side 
 			Crafty.e('Solid').attr({x: 0, y: 600, w: 800, h: 20});
 		});
+		
+		//level 4 Mountains
+		
+		//level 5 Mountains again
+		
+		//level 6 underwater
 		
 		/** INITIATIONS & PLAYER FUNCTIONS **/
 		//start scene
