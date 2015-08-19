@@ -35,29 +35,6 @@
 			Crafty.audio.add("ed", ["ed2.mp3"]);	//tutorial
 			Crafty.audio.add("ed2", ["yup.mp3"]);	//level1
 		**/
-		//template for minion
-		/**Crafty.c('twin', {
-			dir: 1, health:30, strength:40, velocity:5,	//type = attack & image type
-			init: function(){
-				this.requires('2D, Canvas, Twoway, Gravity, Color, Collision')
-					.gravity('Solid')
-					.onHit('Enemy', function(e){
-						e[0].obj.health -= this.strength;
-						this.destroy();
-					})
-					.onHit('Solid', function(){
-						this.velocity *= -1;
-					})
-					.bind('EnterFrame', function(){
-						this.x += this.velocity;
-						if(this.health <= 0){
-							kills += 1;
-							this.destroy();
-						}
-						if(this.hit('Solid')) {this.destroy();}
-					})
-			}
-		});**/
 		
 		//template for Roar circle class
 		/**Crafty.c('Circle', {
@@ -98,12 +75,12 @@
 		
 		//template for Player-controlled sprite
 		Crafty.c('PlayerC', {
-			dir:1, health:30, maxHealth:30, shield:0, slotSelect:1, sprite:'http://i.imgur.com/lSex1EM.png',
+			dir:1, health:30, maxHealth:30, shield:0, slotSelect:1,
 			init: function() {
 				this.requires('2D, Canvas, Twoway, Gravity, Image, Collision')
 					.twoway(4,7)	//built-in movement/jumping function
 					.attr({w: playerw, h: playerh})
-					.image(this.sprite)
+					.image('http://i.imgur.com/lSex1EM.png')
 					.gravity('Solid')
 					.bind('Moved', function(p) {	//executes the function when the 'Moved' event occurs
 						if (this.hit('Solid')){
@@ -114,11 +91,11 @@
 						//keep track of which direction player is facing
 						if(e.key === Crafty.keys.RIGHT_ARROW || e.key === Crafty.keys.D){
 							this.dir = 1;
-							this.image(this.sprite).unflip('X');
+							this.unflip('X');
 						}
 						else if(e.key === Crafty.keys.LEFT_ARROW || e.key === Crafty.keys.A){
 							this.dir = -1;
-							this.image(this.sprite).flip('X');
+							this.flip('X');
 						}
 						//change ability slot
 						if(e.key === Crafty.keys.C){
@@ -135,24 +112,26 @@
 			}
 		});
 		
-		//template for enemies & breakable walls
+		//template for enemies
 		var kills = 0;
 		Crafty.c('Enemy', {
-			health:30, type:1, attackStrength:0.5, velocity:2, sprite: 'http://i.imgur.com/U6IzklM.png',
+			health:30, type:1, attackStrength:0.5, velocity:4,
 			init: function(){
 				this.requires('2D, Canvas, Twoway, Gravity, Image, Collision')
 					.gravity('Solid')
-					.image(this.sprite)
+					.image('http://i.imgur.com/U6IzklM.png')
 					.onHit('PlayerC', function(e){
 						e[0].obj.health -= this.attackStrength - this.attackStrength*e[0].obj.shield;
 					})
 					.onHit('Solid', function(){
 						this.velocity *= -1;
+						if(Crafty.math.abs(this.velocity) != this.velocity){this.flip('X');}
+						else{this.unflip('X');}
 					})
 					.bind('EnterFrame', function(){
 						this.x += this.velocity;
 						if(this.health <= 0){
-							kills += 1;
+							if(this.type > 0){kills += 1;}
 							this.destroy();
 						}
 					});
@@ -209,6 +188,11 @@
 			}
 		});
 		
+		/** STUFF **/
+		var spawnEnemy = function(xpos, ypos){
+			Crafty.e('Enemy').attr({x: xpos, y: ypos, w: 30, h:50});
+		}
+		
 		/** LEVEL SCREENS **/
 		//start screen
 		Crafty.defineScene('Start', function(){
@@ -233,15 +217,15 @@
 		
 		//tutorial screen
 		Crafty.defineScene('level0', function(){
-			Crafty.background('#2E2E2F');
+			Crafty.background('url(http://i.imgur.com/zp9XKZ2.png)');
 			//platforms
-			Crafty.e('Solid').attr({x: 0, y: 550, w: 1160, h: 50}); //floor
-			Crafty.e('Solid').attr({x: 420, y: 440, w: 400, h: 160});
-			Crafty.e('Solid').attr({x:770, y: 335, w: 400, h: 265});
+			Crafty.e('Solid').attr({x: 0, y: 550, w: 800, h: 50}); //floor
+			Crafty.e('Solid').attr({x: 520, y: 440, w: 140, h: 160});
+			Crafty.e('Solid').attr({x: 660, y: 335, w: 140, h: 265});
 			//border
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
-			Crafty.e('Solid').attr({x: 1160, y: 0, w: 30, h: 600});	//E side 
-			Crafty.e('Door').attr({x:790, y: 255, w: 50, h: 80, level:'level1'});
+			Crafty.e('Solid').attr({x: 770, y: 0, w: 30, h: 600});	//E side 
+			Crafty.e('Door').attr({x:720, y: 255, w: 50, h: 80, level:'level1'});
 			Crafty.e('Words').attr({x: 38, y: 200, w: 400}).text("Use WASD or arrow keys to jump/move. Use the DOWN arrow key to enter doors.").textColor('#CCCCCC');
 		});
 		
@@ -253,7 +237,7 @@
 			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20});
 			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20});
 			//BORDER
-			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
+			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600, visible:false});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
 			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:1, level:'level2'});
@@ -305,44 +289,27 @@
 		//spawns player & misc.
 		var playerw = 30;
 		var playerh = 50;
-		var abilities = ["Aries' Ability: The classic Sword", "Taurus' Ability: Super Strength; can even smash walls", "Gemini's Ability: Unleash your inner minions",
+		var abilities = ["Aries' Ability: The classic Sword", "Taurus' Ability: Super Strength; can even smash walls", "Gemini's Ability: Unleash your inner minion for five seconds",
 						"Cancer's Ability: Body Shield; immunity to all damage", "Leo's Ability: Roar; can briefly stun enemies", "Virgo's Ability: Absorb life force from what you touch",
 						"Libra's Ability: Heal yourself a bit at a time", "Scorpio's Ability: Poison Darts wither enemies away", "Sagittarius' Ability: Archer's Arrows", 
 						"Capricorn's Ability: Double Jumping; just press UP key twice", "Aquarius' Ability: Water Blast; can also put out fires", 
 						"Pisces' Ability: Breathe underwater"];
 		var spawnPlayer = function(xpos, ypos){
+			var state = 0;	//keep track of whether the game has just started or not
 			kills = 0;	//reset amount of kills so doors can be locked
 			player = Crafty.e('PlayerC').attr({x: xpos, y: ypos, w: playerw, h: playerh});
 			Crafty.viewport.follow(player,0,0);			//camera to follow player
-			//health bar
-			healthBarOutline = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+18, y: Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
-				.color('black');
-			healthBar = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+23, y: Crafty.viewport._y+30, w: player.health*2, h: 20})
-				.color('green');
-			healthText = Crafty.e('Words').attr({x: healthBarOutline.x, y: healthBarOutline.y-20, w:100, h:30}).text('Health:').textFont({size:'15px'});
-			//ability slots
-			slotBarOutline = Crafty.e('2D, Canvas, Color')
-				.attr({x: -Crafty.viewport._x+300, y: -Crafty.viewport._y+25, w:490, h:50})
-				.color('black');
-			slotBars = Crafty.e('2D, DOM, Image')
-				.attr({x: -Crafty.viewport._x+305, y: -Crafty.viewport._y+30, w: 480, h:40})
-				.image('http://i.imgur.com/oVWgV3l.png');
-			slotSelector = Crafty.e('2D, Canvas, Color')
-				.attr({x: slotBars.x + player.slotSelect*40-40, y: slotBars.y + 40, w: 40, h:10})
-				.color('white');
-			abilityText = Crafty.e('Words').attr({x: slotBarOutline.x, y: slotBarOutline.y - 20, w: 500, h: 40}).text(abilities[player.slotSelect-1]).textFont({size:'15px'});
-		
 			//update health & ability slot bars so they're visible at all times
 			updateHealth = function(){
-				healthBarOutline.destroy();
-				healthBar.destroy();
-				healthText.destroy();
-				slotBarOutline.destroy();
-				slotBars.destroy();
-				slotSelector.destroy();
-				abilityText.destroy();
+				if(state === 1){
+					healthBarOutline.destroy();
+					healthBar.destroy();
+					healthText.destroy();
+					slotBarOutline.destroy();
+					slotBars.destroy();
+					slotSelector.destroy();
+					abilityText.destroy();
+				}
 				//health bar
 				healthBarOutline = Crafty.e('2D, Canvas, Color')
 					.attr({x: -Crafty.viewport._x+18, y: -Crafty.viewport._y+25, w: player.maxHealth*2+10, h: 30})
@@ -363,6 +330,7 @@
 					.attr({x: slotBars.x + player.slotSelect*40-40, y: slotBars.y + 40, w: 40, h:10})
 					.color('white');
 				abilityText = Crafty.e('Words').attr({x: slotBarOutline.x, y: slotBarOutline.y - 20, w: 500, h: 40}).text(abilities[player.slotSelect-1]).textFont({size:'15px'});
+				state = 1;
 				//game over screen
 				if(player.health <= 0){
 					Crafty.enterScene('Over');
@@ -376,75 +344,72 @@
 			player.uniqueBind('KeyDown', function(e) {
 				//sword
 				if(player.slotSelect === 1){
-					player.sprite = 'http://i.imgur.com/lSex1EM.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/lSex1EM.png');
 					if(e.key === Crafty.keys.SPACE){
-						player.sprite = 'http://i.imgur.com/QWYfemj.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/QWYfemj.png');
 						player.onHit('Enemy', function(e){
 							if((player.dir === 1 && e[0].obj.x > player.x+playerw && e[0].obj.x < player.x + player.w) || (player.dir === -1 && e[0].obj.x > player.x-38 && e[0].obj.x < player.x)){
 								e[0].obj.health-=10;
-								player.health += 1;}
+							}
 						});
 						player.one('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/lSex1EM.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/lSex1EM.png');
 						});
 					}
 				}
 				//super strength to KO enemies and smash through certain walls
 				else if(player.slotSelect === 2){
-					player.sprite = 'http://i.imgur.com/zX3t9YY.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/zX3t9YY.png');
 					if(e.key === Crafty.keys.SPACE){
-						player.sprite = 'http://i.imgur.com/n9oLKTt.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/n9oLKTt.png');
 						player.onHit('Enemy', function(e){
+							var hit = false;
 							if((player.dir === 1 && e[0].obj.x > player.x+playerw && e[0].obj.x < player.x + player.w) || (player.dir === -1 && e[0].obj.x > player.x-38 && e[0].obj.x < player.x)){
-								e[0].obj.health-=30;
-								player.health += 1;}
+								if(hit === false){
+									e[0].obj.health-=30;
+									hit = true;
+								}
+							}
 						});
-						player.one('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/zX3t9YY.png';
-							player.image(player.sprite);
-						});
+						setTimeout(function(){player.image('http://i.imgur.com/zX3t9YY.png');}, 1000);
 					}
 				}
-				//gemini???? unleash a demolisher
+				//unleash an inner minion
 				else if(player.slotSelect === 3){
-					player.sprite = 'http://i.imgur.com/3twc0Qe.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/3twc0Qe.png');
 					if(e.key === Crafty.keys.SPACE){
-						//Crafty.e('twin, Image').attr({x: this._x, y: this._y + 0.3 *playerh, w: 25, h: 4, xspeed: 15 *player.dir, strength: 40})
+						Crafty.e('Enemy').attr({x: this._x, y: this._y, w: playerw, h: playerh, velocity: 2*player.dir, attackStrength:0, health:5, type:0})
+							.image('http://i.imgur.com/WUQrodK.png')
+							.bind('EnterFrame', function(){this.health -= 0.02;})	//because the default FPS is 50
+							.onHit('Enemy', function(e){
+								if(e[0].obj.type > 0){
+									e[0].obj.health -= 6;
+									this.health = 0;
+								}
+							});
 					}
 				}
 				//body shield makes player immune to all damage
 				else if(player.slotSelect === 4){
-					player.sprite = 'http://i.imgur.com/bZW5l01.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/bZW5l01.png');
 					if(e.key === Crafty.keys.SPACE){
 						player.shield = 1;
-						player.sprite = 'http://i.imgur.com/T2BQcfL.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/T2BQcfL.png');
 						player.y -= 2;
 						player.one('KeyUp', function(){
 							player.shield = 0;
-							player.sprite = 'http://i.imgur.com/bZW5l01.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/bZW5l01.png');
 						});
 					}
 				}
 				//roar to briefly stun enemies
 				else if(player.slotSelect === 5){
-					player.sprite = 'http://i.imgur.com/DlROvFf.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/DlROvFf.png');
 					if(e.key === Crafty.keys.SPACE){
-						player.sprite = 'http://i.imgur.com/jPDBlap.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/jPDBlap.png');
 						player.y -= 2;
 						player.one('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/DlROvFf.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/DlROvFf.png');
 						});
 						/**Crafty.e('Circle')
 						.attr({x: this._x, y: this._y, radius: 100, visible : false})
@@ -467,12 +432,10 @@
 				}
 				//suck the life force out of enemies and heal yourself
 				else if(player.slotSelect === 6){
-					player.sprite = 'http://i.imgur.com/58f3YWP.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/58f3YWP.png');
 					if(e.key === Crafty.keys.SPACE){
 						player.shield = 1;
-						player.sprite = 'http://i.imgur.com/hoVowYe.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/hoVowYe.png');
 						player.y -= 2;
 						player.onHit('Enemy', function(e){
 							player.health += 0.1;
@@ -481,34 +444,28 @@
 						});
 						player.one('KeyUp', function(){
 							player.shield = 0;
-							player.sprite = 'http://i.imgur.com/58f3YWP.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/58f3YWP.png');
 						});
 					}
 				}
 				//healing
 				else if(player.slotSelect === 7){
-					player.sprite = 'http://i.imgur.com/A04X0bC.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/A04X0bC.png');
 					if(e.key === Crafty.keys.SPACE){
 						player.health += 10;
-						player.sprite = 'http://i.imgur.com/AfcrQ7n.png';
-						player.image(player.sprite);
-						player.y -= 2;
 						updateHealth();
+						player.image('http://i.imgur.com/AfcrQ7n.png');
+						player.y -= 2;
 						player.one('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/A04X0bC.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/A04X0bC.png');
 						});
 					}
 				}
-				//poison darts that slowly decrease an enemy's health until it dies, once hit (THIS NEEDS WORK)
+				//poison darts that slowly decrease an enemy's health until it dies, once hit
 				else if(player.slotSelect === 8){
-					player.sprite = 'http://i.imgur.com/cBHxYQl.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/cBHxYQl.png');
 					if(e.key === Crafty.keys.SPACE){
-						player.sprite = 'http://i.imgur.com/zL75Q38.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/zL75Q38.png');
 						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.5*playerh, w: 15, h: 10, xspeed: 7*player.dir, strength: 5, sprite:'http://i.imgur.com/EJAIT1H.png'})
 							.onHit('Enemy', function(e){
 								var timer = setInterval(function(){
@@ -517,29 +474,24 @@
 								}, 1000);
 							});
 						player.one('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/cBHxYQl.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/cBHxYQl.png');
 						});
 					}
 				}
 				//arrows that do the most damage out of all the projectiles
 				else if(player.slotSelect === 9){
-					player.sprite = 'http://i.imgur.com/1BkL56F.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/1BkL56F.png');
 					if(e.key === Crafty.keys.SPACE){
-						player.sprite = 'http://i.imgur.com/xFYXJ2L.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/xFYXJ2L.png');
 						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.4*playerh, w: 25, h: 5, xspeed: 10*player.dir, strength: 10, sprite:'http://i.imgur.com/rJPITsy.png'});
 						player.one('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/1BkL56F.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/1BkL56F.png');
 						});
 					}
 				}
 				//double jump
 				else if(player.slotSelect === 10){
-					player.sprite = 'http://i.imgur.com/fCOhRqf.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/fCOhRqf.png');
 					player.y -= 3;
 					if (!this._falling && e.key === Crafty.keys.UP_ARROW) {
 						this._canJumpAgain = true;} 
@@ -551,28 +503,20 @@
 				}
 				//water blast can also put out fires and push back enemies
 				else if(player.slotSelect === 11){
-					player.sprite = 'http://i.imgur.com/KlijvuQ.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/KlijvuQ.png');
 					if(e.key === Crafty.keys.SPACE){
-						player.sprite = 'http://i.imgur.com/dAWHVjM.png';
-						player.image(player.sprite);
+						player.image('http://i.imgur.com/dAWHVjM.png');
 						Crafty.e('Projectile').attr({x: this._x, y: this._y + 0.3*playerh, w: 25, h: 25, xspeed: 8*player.dir, strength: 4, sprite:'http://i.imgur.com/xRc8cEG.png'});
 						player.one('KeyUp', function(){
-							player.sprite = 'http://i.imgur.com/KlijvuQ.png';
-							player.image(player.sprite);
+							player.image('http://i.imgur.com/KlijvuQ.png');
 						});
 					}
 				}
 				//breathe underwater
 				else if(player.slotSelect === 12){
-					player.sprite = 'http://i.imgur.com/I1ia1vk.png';
-					player.image(player.sprite);
+					player.image('http://i.imgur.com/I1ia1vk.png');
 				}
 			});
-		}
-		/** ENEMY LOGIC **/
-		var spawnEnemy = function(xpos, ypos){
-			Crafty.e('Enemy').attr({x: xpos, y: ypos, w: 30, h:50});
 		}
 		
     </script>
