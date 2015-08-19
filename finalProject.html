@@ -173,19 +173,26 @@
 			}
 		});
 		
-		//template for all doors
+	//template for all doors
 		Crafty.c('Door', {
-			level:'level0', killsNeeded:0,
+			level:'level0', locked:false, killsNeeded:0,
 			init: function(){
 				this.requires('2D, Canvas, Grid, Color, Collision')
 					.attr({w: 50, h: 80})
 					.color('#BBBBBB')
 					//enables scene change
 					.bind('KeyDown', function(e){
-						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && kills >= this.killsNeeded){
+						if(kills >= this.killsNeeded){this.locked = false;}
+						if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === false){
 							Crafty.enterScene(this.level);
 						}
-						else if((e.key === Crafty.keys.DOWN_ARROW || e.key === Crafty.keys.S) && this.hit('PlayerC') && kills < this.killsNeeded){
+						else if(e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === false){
+							Crafty.enterScene(this.level);
+						}
+						else if(e.key === Crafty.keys.DOWN_ARROW && this.hit('PlayerC') && this.locked === true){
+							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
+						}
+						else if(e.key === Crafty.keys.S && this.hit('PlayerC') && this.locked === true){
 							Crafty.e('Words').attr({x: this.x, y: this.y - 20, w:75, h: 20}).text('Locked!').textFont({size:'15px'});
 						}
 					});
