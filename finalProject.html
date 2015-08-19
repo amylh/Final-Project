@@ -11,7 +11,7 @@
 		width: 800px;
 		}
 	</style>
-	 <link href='http://fonts.googleapis.com/css?family=Sigmar+One|Pacifico' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Sigmar+One|Pacifico' rel='stylesheet' type='text/css'>
   </head>
   <body>
 	<div align='center'><font style='font-size:70px; font-family:Pacifico'>She's Not Here</font></div>
@@ -28,9 +28,10 @@
 				e.preventDefault();
 			}
 		}, false);
-	Crafty.init(800,600, document.getElementById('game'));	//initiate crafty & window
-
-/** MUSIC 
+		//initiate crafty & window
+		Crafty.init(800,600, document.getElementById('game'));
+		
+		/** MUSIC 
 			Crafty.audio.add("song", ["1am.mp3"]);	//start screen
 			Crafty.audio.add("ed", ["ed2.mp3"]);	//tutorial
 			Crafty.audio.add("ed2", ["yup.mp3"]);	//level1
@@ -183,6 +184,7 @@
 					});
 			}
 		});
+		
 		//default template for all text (it can be overwritten for customization)
 		Crafty.c('Words', {
 			init: function(){
@@ -278,8 +280,10 @@
 			spawnEnemy(300, 140);
 			//iceberg standing platform
 			Crafty.e('2D, Canvas, Solid, Color, Collision')
-				.attr({x:125, y: 350, w: 200, h: 250})
+				.attr({x:225, y: 350, w: 200, h: 250})
 				.color('white');
+			Crafty.e('Door').attr({x:105, y: 427, w: 50, h: 80});
+			Crafty.e('Solid').attr({x: 95, y: 508, w: 100, h: 15});
 			//water
 			Crafty.e('Water').attr({x:0, y: 200, w: 800, h: 400});
 			//floor & border
@@ -495,9 +499,11 @@
 					}
 				}
 				//double jump
-				else if(player.slotSelect === 10){	
+				else if(player.slotSelect === 10){
+					player.image('http://i.imgur.com/fCOhRqf.png');
+					player.y -= 3;
 					if (!this._falling && e.key === Crafty.keys.UP_ARROW) {
-						this._canJumpAgain = true;}
+						this._canJumpAgain = true;} 
 					else if (!this._falling && e.key === Crafty.keys.W) {
 						this._canJumpAgain = true;}
 					else if (this._canJumpAgain && e.key === Crafty.keys.UP_ARROW) {
@@ -511,6 +517,7 @@
 						this._canJumpAgain = false;
 					}
 				}
+				
 				//water blast can also put out fires and push back enemies
 				else if(player.slotSelect === 11){
 					player.image('http://i.imgur.com/KlijvuQ.png');
@@ -528,6 +535,8 @@
 				}
 			});
 		}
+		
     </script>
   </body>
 </html>
+
