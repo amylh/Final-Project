@@ -444,6 +444,7 @@
 				else if(player.slotSelect === 3){
 					player.image('http://i.imgur.com/3twc0Qe.png');
 					if(e.key === Crafty.keys.SPACE){
+						if (player.dir === 1){
 						Crafty.e('Enemy').attr({x: this._x, y: this._y, w: playerw, h: playerh, velocity: 2*player.dir, attackStrength:0, health:5, type:0})
 							.image('http://i.imgur.com/WUQrodK.png')
 							.bind('EnterFrame', function(){this.health -= 0.02;})	//because the default FPS is 50
@@ -453,6 +454,18 @@
 									this.health = 0;
 								}
 							});
+						}
+						else if (player.dir === -1){
+						Crafty.e('Enemy').attr({x: this._x, y: this._y, w: playerw, h: playerh, velocity: -2*-player.dir, attackStrength:0, health:5, type:0})
+							.image('http://i.imgur.com/WUQrodK.png').flip('X')
+							.bind('EnterFrame', function(){this.health -= 0.02;})	//because the default FPS is 50
+							.onHit('Enemy', function(e){
+								if(e[0].obj.type > 0){
+									e[0].obj.health -= 6;
+									this.health = 0;
+								}
+							});
+						}
 					}
 				}
 				//body shield makes player immune to all damage
