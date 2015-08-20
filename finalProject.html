@@ -382,8 +382,6 @@
 			currentLevel = 'level6';
 			Crafty.background('url(http://i.imgur.com/6j3PyHK.png)');
 			//Crafty.audio.remove("ed2");
-			spawnEnemy(1000, 300);
-			spawnPlayer(40, 300); 
 			//platforms
 			Crafty.e('Solid').attr({x:0, y:400, w:300, h:200});
 			Crafty.e('Solid').attr({x:1100, y:400, w:300, h:200});
@@ -392,6 +390,8 @@
 			Crafty.e('Solid').attr({x:600, y:480, w:100, h:120})
 				.color('white');
 			Crafty.e('Door').attr({x: 1300, y:320, level:'end', killsNeeded:0});
+			spawnEnemy(1000, 300);
+			spawnPlayer(40, 300); 
 			//ceiling stuff (to make it more cave-like)
 			Crafty.e('Solid').attr({x:0, y:0, w:290, h:100});
 			Crafty.e('Solid').attr({x:290, y:0, w:330, h:50});
@@ -410,6 +410,7 @@
 		
 		//end screen...?
 		Crafty.defineScene('end', function(){
+			Crafty.viewport._x = 0;
 			Crafty.background('black');
 			Crafty.e('Words').attr({x:100, y:100, w: 200, h:100}).text('Thanks for playing what we have made so far!');
 			Crafty.e('Words').attr({x:200, y:100, w: 200, h:100}).text("Much thanks to Girls Who Code, our awesome mentors, and Moody's for making this game possible!")
