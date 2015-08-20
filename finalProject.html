@@ -17,13 +17,14 @@
 	<div align='center'><font style='font-size:60px; font-family:Pacifico'>She's Not Here</font></div>
     <div id="game"></div>
 	<p align='center' style='font-size:15px; font-family:Verdana'>A game about conquering your inner demons and insecurities. Take on the role of a troubled teen and get out of the nightmare!</p>
+	<p align='center' style='font-size:15px; font-family:Verdana'> INSTRUCTIONS (in case you didn't read them in-game -.-): </p>
 	<p align='center' style='font-size:15px; font-family:Verdana'>Use the WASD or arrow keys to move and jump.</p>
 	<p align='center' style='font-size:15px; font-family:Verdana'>Use the X and C keys to switch between the Zodiac Abilities. Press the SPACEBAR to actually use them (unless stated otherwise).</p>
-	<p align='center' style='font-size:15px; font-family:Verdana'>Created by: A.L., J.H., E.M., T.M., & N.C. as our final project for Girls Who Code, 2015.</p>
-	<p align='center' style='font-size:15px; font-family:Verdana'>&#169;COPYRIGHTED... Lol.</p>
+	<p align='center' style='font-size:15px; font-family:Verdana'>Created by: A.L., J.H., E.M., T.M., and N.C. as our final project for Girls Who Code, 2015.</p>
+	<p align='center' style='font-size:15px; font-family:Verdana'>COPYRIGHTED... Lol.</p>
 	<p align='center' style='font-size:10px; font-family:Verdana'>All game art was drawn by ourselves. The game was programmed in JavaScript and HTML5, using the library CraftyJS.</p>
 	<p align='center' style='font-size:10px; font-family:Verdana'>Introduction music: 1AM (from the game Animal Crossing: New Leaf, owned by Nintendo Co., Ltd.)</p>
-    <script type="text/javascript" src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     
 	<script>
 		//prevent arrow keys/spacebar from moving scrollbar
@@ -44,12 +45,6 @@
 		}
 		//initiate crafty & window
 		Crafty.init(800,600, document.getElementById('game'));
-		
-		/** MUSIC 
-			Crafty.audio.add("song", ["1am.mp3"]);	//start screen
-			Crafty.audio.add("ed", ["ed2.mp3"]);	//tutorial
-			Crafty.audio.add("ed2", ["yup.mp3"]);	//level1
-		**/
 		
 		/** CLASSES **/
 		//template for solids
@@ -134,9 +129,10 @@
 					.gravity('Solid')
 					.image(this.sprite)
 					.onHit('PlayerC', function(e){
-						if(e[0].obj.shield === 0){e[0].obj.takeDamage();}
+						if(e[0].obj.shield === 0 && this.type > 0){
+							e[0].obj.takeDamage();
+						}
 						e[0].obj.health -= (this.attackStrength - this.attackStrength*e[0].obj.shield);
-						e[0].obj.takeDamage();
 					})
 					.onHit('Solid', function(){
 						this.velocity *= -1;
@@ -239,21 +235,6 @@
 			}
 		});
 		
-		//template for Roar circle class
-		/**Crafty.c('Circle', {
-+			radius: 50,
-+			init: function() {
-+				this.requires('2D, Canvas, Collision, Color')
-+				.attr({w: this.radius * 2, h: this.radius * 2})
-+				var ctx = Crafty.canvas.context;
-+				ctx.save();
-+				ctx.beginPath();
-+				ctx.arc(this.x + this.radius, this.y + this.radius,	this.radius, 0,	Math.PI * 2);
-+			ctx.closePath();
-+			ctx.fill();
-+		}
-+		});**/
-		
 		/** STUFF **/
 		var spawnEnemy = function(xpos, ypos){
 			Crafty.e('Enemy').attr({x: xpos, y: ypos, w: 30, h:50});
@@ -264,7 +245,7 @@
 		//game over screen
 		Crafty.defineScene('Over', function(){
 			Crafty.background('url(http://i.imgur.com/HdmmNJV.png)');	//http://i.imgur.com/c2A937j.png
-			Crafty.e('Words').attr({x: 100, y:100, w:800, h:100}).text('You fell into eternal rest...').textFont({size:'40px'});
+			Crafty.e('Words').attr({x: 100, y:100, w:800, h:100}).text('You lost to your nightmare...').textFont({size:'40px'});
 			Crafty.e('Words').attr({x: 200, y:200, w:250, h:200}).text('Press the spacebar to restart.')
 				.bind('KeyDown', function(e){
 					if(e.key === Crafty.keys.SPACE){
@@ -317,85 +298,122 @@
 		
 		//Level 1
 		Crafty.defineScene('level1', function(){
+			currentLevel = 'level1';
 			Crafty.background('url(https://raw.githubusercontent.com/creatoramy/Final-Project/a1226b20dad74feea6090e7825ffdc723c11f6b5/cutscenes/bg/bg%20lvl3.png)');
 			//PLATFORMS
-			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});
-			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 20});
-			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 20});
+			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50});		//floor
+			Crafty.e('Solid').attr({x: 1200, y: 440, w: 400, h: 120});
+			Crafty.e('Solid').attr({x: 1400, y: 330, w: 200, h: 120});
 			//BORDER
 			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600, visible:false});	//W side
 			Crafty.e('Solid').attr({x: 1600, y: 0, w: 30, h: 600});	//E side 
 			//EXIT
-			Crafty.e('Door').attr({x:1550, y: 250, locked:true, killsNeeded:2, level:'level2'});
+			Crafty.e('Door').attr({x:1550, y: 250, killsNeeded:2, level:'level2'});
 			Crafty.e('Words').attr({x:50, y:200, w:400}).text("Use the X and C keys to switch abilities, SPACEBAR to use the ability.").textColor('#CCCCCC');
-			Crafty.e('Words').attr({x:200, y:300, w:400}).text("Defeat the enemy in order to proceed.").textColor('#CCCCCC');
-			spawnEnemy(770, 140);
-			spawnEnemy(50, 540);
-			spawnPlayer(200, 550);
+			spawnEnemy(720, 550);
+			spawnEnemy(350, 550);
+			spawnPlayer(50, 550);
+			Crafty.e('TextBox').attr({text:'!!! W-what is this?! And that thing...it feels evil...'});
 		});
 		
 		//Level 2 Forest
 		Crafty.defineScene('level2', function(){
+			currentLevel = 'level2';
 			Crafty.background('url(http://i.imgur.com/h5Hy9tJ.png)');
-			//PLATFORMS
-			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50}).color('black'); 
+			//border & floor
+			Crafty.e('Solid').attr({x: 0, y: -200, w: 30, h: 800, visible:false}).color('black');	//W side
+			Crafty.e('Solid').attr({x: 1600, y: -200, w: 30, h: 800}).color('black');	//E side 
+			Crafty.e('Solid').attr({x: 0, y: 550, w: 1600, h: 50}).color('black'); //floor
+			//hill
 			Crafty.e('Solid').attr({x: 1400, y: 430, w: 200, h: 120}).color('black'); //hill
 			Crafty.e('Solid').attr({x: 1350, y: 500, w: 250, h: 70}).color('black'); //hill
+			//tree branches
 			Crafty.e('Solid').attr({x: 100, y: 360, w: 300, h: 20}).color('#5C3317'); //must use double jump to get on
-			
-			
 			Crafty.e('Solid').attr({x: 540, y: 180, w: 450, h: 20}).color('#5C3317'); 
 			Crafty.e('Solid').attr({x: 570, y: 370, w: 380, h: 20}).color('#5C3317'); 
 			Crafty.e('Solid').attr({x: 130, y: 250, w: 80, h: 20}).color('#5C3317'); //platform 2
 			Crafty.e('Solid').attr({x: 70, y: 70, w: 160, h: 20}).color('#5C3317');
 			Crafty.e('Solid').attr({x: 220, y: 170, w: 65, h: 20}).color('#5C3317');
 			Crafty.e('Solid').attr({x: 350, y: 80, w: 100, h: 20}).color('#5C3317');
-			
-			//TREES
+			Crafty.e('Solid').attr({x: 540, y: 165, w: 20, h: 15}).color('#5C3317'); //keeps the enemy from sliding off			
+			//tree trunks
 			Crafty.e('Solid').attr({x: 436, y: 0, w: 66, h: 550}).color('#5C3317');	
 			Crafty.e('Solid').attr({x: 206, y: 0, w: 54, h: 550}).color('#5C3317');
 			Crafty.e('Solid').attr({x: 745, y: 0, w: 47, h: 550}).color('#5C3317');
-			
-			//BOARDER
-			Crafty.e('Solid').attr({x: 0, y: -200, w: 30, h: 800, visible:false}).color('black');	//W side
-			Crafty.e('Solid').attr({x: 1600, y: -200, w: 30, h: 800}).color('black');	//E side 
-			
-			//EXIT
+			//door
 			Crafty.e('Door').attr({x:1550, y: 349, locked:true, killsNeeded:3, level:'level3'});
-			Crafty.e('Solid').attr({x: 540, y: 165, w: 20, h: 15}).color('#5C3317'); //keeps the enemy from sliding off
-			
+			//enemies & player
 			spawnEnemy(610, 180);
 			spawnEnemy(1000, 180);
 			spawnEnemy(300, 550);
-			
 			spawnPlayer(50, 550);
-			//spawnFire(771,139);
 		});
 		
-		//Level 3 Forest Again
+		//Level 3 mountains
 		Crafty.defineScene('level3', function(){
 			currentLevel = 'level3';
+			Crafty.background('url(http://i.imgur.com/iFxoMAy.png)');
+			Crafty.viewport._x = 0;
+			Crafty.e('Words').attr({x:100, y:100, w: 200, h:100}).text('This is a work-in-progress. Press space to continue...')
+				.bind('KeyDown', function(e){
+					if(e.key === Crafty.keys.SPACE){Crafty.enterScene('level4');}
+				});
+		});
+		//level 4 mountains2
+		Crafty.defineScene('level4', function(){
+			currentLevel = 'level4';
+			Crafty.background('url(http://i.imgur.com/Rxtm2M1.png)');
+			Crafty.e('Words').attr({x:100, y:100, w: 200, h:100}).text('This is a work-in-progress. Press space to continue...')
+				.bind('KeyDown', function(e){
+					if(e.key === Crafty.keys.SPACE){Crafty.enterScene('level5');}
+				});
+		})
+		//level 5 cave
+		Crafty.defineScene('level5', function(){
+			currentLevel = 'level5';
+			Crafty.background('url(https://raw.githubusercontent.com/creatoramy/Final-Project/master/cutscenes/bg/bg%20lvl1.png)');
+			Crafty.e('Words').attr({x:100, y:100, w: 200, h:100}).text('This is a work-in-progress. Press space to continue...')
+				.bind('KeyDown', function(e){
+					if(e.key === Crafty.keys.SPACE){Crafty.enterScene('level6');}
+				});
+		})
+		//Level 6 Underwater
+		Crafty.defineScene('level6', function(){
+			currentLevel = 'level6';
 			Crafty.background('url(http://i.imgur.com/6j3PyHK.png)');
 			//Crafty.audio.remove("ed2");
-			spawnEnemy(300, 140);
-			spawnPlayer(150, 200); 
-			//iceberg standing platform
-			Crafty.e('2D, Canvas, Solid, Color, Collision')
-				.attr({x:125, y: 350, w: 200, h: 250})
+			spawnEnemy(1000, 300);
+			spawnPlayer(40, 300); 
+			//platforms
+			Crafty.e('Solid').attr({x:0, y:400, w:300, h:200});
+			Crafty.e('Solid').attr({x:1100, y:400, w:300, h:200});
+			Crafty.e('Solid').attr({x:425, y:360, w: 200, h:240})
 				.color('white');
+			Crafty.e('Solid').attr({x:600, y:480, w:100, h:120})
+				.color('white');
+			Crafty.e('Door').attr({x: 1300, y:320, level:'end', killsNeeded:0});
+			//ceiling stuff (to make it more cave-like)
+			Crafty.e('Solid').attr({x:0, y:0, w:290, h:100});
+			Crafty.e('Solid').attr({x:290, y:0, w:330, h:50});
+			Crafty.e('Solid').attr({x:620, y:0, w:40, h:100});
+			Crafty.e('Solid').attr({x:660, y:0, w:40, h:65});
+			Crafty.e('Solid').attr({x:700, y:0, w:290, h:20});
+			Crafty.e('Solid').attr({x:990, y:0, w:210, h:100});
+			Crafty.e('Solid').attr({x:1200, y:0, w:200, h:125})
 			//water
-			Crafty.e('Water').attr({x:0, y: 200, w: 800, h: 400});
+			Crafty.e('Water').attr({x:300, y: 410, w: 800, h: 190});
 			//floor & border
-			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600});	//W side
-			Crafty.e('Solid').attr({x: 800, y: 0, w: 30, h: 600});	//E side 
-			Crafty.e('Solid').attr({x: 0, y: 600, w: 800, h: 20});
+			Crafty.e('Solid').attr({x: 0, y: 0, w: 30, h: 600, visible:false});	//W side
+			Crafty.e('Solid').attr({x: 1400, y: 0, w: 30, h: 600});	//E side 
+			Crafty.e('Solid').attr({x: 0, y: 580, w: 1400, h: 20});	//floor
 		});
 		
-		//level 4 Mountains
-		
-		//level 5 Mountains again
-		
-		//level 6 underwater
+		//end screen...?
+		Crafty.defineScene('end', function(){
+			Crafty.background('black');
+			Crafty.e('Words').attr({x:100, y:100, w: 200, h:100}).text('Thanks for playing what we have made so far!');
+			Crafty.e('Words').attr({x:200, y:100, w: 200, h:100}).text("Much thanks to Girls Who Code, our awesome mentors, and Moody's for making this game possible!")
+		});
 		
 		/** INITIATIONS & PLAYER FUNCTIONS **/
 		//start scene
@@ -502,15 +520,15 @@
 				//unleash an inner minion
 				else if(player.slotSelect === 3){
 					player.sprite = 'http://i.imgur.com/3twc0Qe.png';
-					player.image(this.sprite);
+					player.image(player.sprite);
 					if(e.key === Crafty.keys.SPACE){
 						Crafty.e('Enemy').attr({x: this._x, y: this._y, w: playerw, h: playerh, velocity: 2*player.dir, attackStrength:0, health:5, type:0})
 							.image('http://i.imgur.com/WUQrodK.png')
 							.bind('EnterFrame', function(){this.health -= 0.02;})	//because the default FPS is 50
 							.onHit('Enemy', function(e){
 								if(e[0].obj.type > 0){
-									e[0].obj.takeDamage();
 									e[0].obj.health -= 6;
+									e[0].takeDamage();
 									this.health = 0;
 								}
 							});
@@ -544,21 +562,6 @@
 							player.sprite = 'http://i.imgur.com/DlROvFf.png';
 							player.image(player.sprite);
 						});
-						/**Crafty.e('Circle').attr({x: this._x, y: this._y, radius: 100, visible: false})
-							.onHit('Enemy', function(e){
-								var WAS = e[0].obj.velocity;
-								e[0].obj.velocity = 0;
-								setTimeout(function(){
-									if(WAS < 0){
-									e[0].obj.velocity = -2;
-									}
-									else {
-									e[0].obj.velocity = 2;
-									}
-								}, 3000);
-								this.destroy();
-							})
-						}**/
 					}
 				}
 				//suck the life force out of enemies and heal yourself
@@ -665,12 +668,15 @@
 				else if(player.slotSelect === 12){
 					player.sprite = 'http://i.imgur.com/I1ia1vk.png';
 					player.image(player.sprite);
-					if(e.key === Crafty.keys.SPACE && player.hit('Water')){
-						player.gravityConst(-0.05);
-					}
-					else if(e.key === Crafty.keys.SPACE && !player.hit('Water')){
-						player.gravityConst(0.2);
-					}
+					player.uniqueBind('EnterFrame', function(){
+						if(player.hit('Water')){
+							player.gravityConst(-0.05);
+							player.bind('KeyUp', function(){player.gravityConst(0.2);});
+						}
+						else if(!player.hit('Water')){
+							player.gravityConst(0.2);
+						}
+					});
 				}
 			});
 		}
